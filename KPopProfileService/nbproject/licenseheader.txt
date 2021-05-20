@@ -1,0 +1,9 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}DMS Assignment 4
+${licensePrefix}KPop Profile RESTFul Service
+${licensePrefix}Elizabeth Cammell (18030282) & Bernadette Cruz (17985971)
+<#if licenseLast??>
+${licenseLast}
+</#if>
