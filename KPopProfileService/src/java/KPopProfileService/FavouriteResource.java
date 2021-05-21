@@ -62,8 +62,12 @@ public class FavouriteResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public void addFavouriteBand(String bandNameJSON) {
         StringTokenizer st = new StringTokenizer(bandNameJSON, "\"");
+        
         String bandName = st.nextToken();
-        //CHANGE TO TAKE IN TWO PARAMS
+        System.out.println("Band Name: " + bandName);
+        String userName = st.nextToken();
+        System.out.println("User Name: " + userName);
+        
         favouriteBean.addFavouriteBand(bandName, userName);
     }
 }
