@@ -1,0 +1,6 @@
+#ignore build directories
+/nbproject
+/web
+
+#ignore build file
+[bB]uild.xml
