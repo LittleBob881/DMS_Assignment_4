@@ -18,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "jbr9093_kpop_band_faves")
-public class KpopFavouriteBand {
+public class FavouriteBand {
     
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
@@ -28,7 +28,7 @@ public class KpopFavouriteBand {
     @Column
     private String username;
     
-    public KpopFavouriteBand()
+    public FavouriteBand()
     {}
     
     public Long getId()
