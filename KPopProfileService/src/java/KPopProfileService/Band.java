@@ -22,9 +22,9 @@ public class Band implements Serializable {
     @Column(name = "name")
     private String name;
     @Column(name = "generation")
-    private String generation;
+    private int generation;
     @Column(name = "year")
-    private String year;
+    private int year;
     @Column(name = "fanName")
     private String fandomName;
 
@@ -39,19 +39,19 @@ public class Band implements Serializable {
         this.name = name;
     }
 
-    public String getGeneration() {
+    public int getGeneration() {
         return generation;
     }
 
-    public void setGeneration(String generation) {
+    public void setGeneration(int generation) {
         this.generation = generation;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
@@ -63,12 +63,4 @@ public class Band implements Serializable {
         this.fandomName = fandomName;
     }
     
-    public String getJSONString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("{ \"bandName\":\"").append(this.getName()).append("\" , ");
-        buffer.append(" \"fandomName\":\"").append(this.getFandomName()).append("\" , ");
-        buffer.append(" \"generation\":\"").append(this.getGeneration()).append("\" , ");
-        buffer.append(" \"year\":\"").append(this.getYear()).append("\" } ");
-        return buffer.toString();
-    }
 }

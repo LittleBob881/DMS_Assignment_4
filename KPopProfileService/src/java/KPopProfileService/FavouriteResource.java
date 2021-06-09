@@ -32,7 +32,6 @@ public class FavouriteResource {
     {}
     
     @GET
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String getFavourites(String userNameJSON) {
         StringTokenizer st = new StringTokenizer(userNameJSON, "\"");
@@ -40,14 +39,14 @@ public class FavouriteResource {
         
         StringBuilder buffer = new StringBuilder();
         buffer.append("[ ");
-        List<Band> allbands = favouriteBean.getFavouriteBands(userName);
-        for (int i = 0; i < allbands.size(); i++) {
-            buffer.append(allbands.get(i).getJSONString());
-            if (i != allbands.size() - 1) {
-                buffer.append(", ");
-            }
-        }
-        buffer.append("]");
+//        List<Band> allbands = favouriteBean.getFavouriteBands(userName);
+//        for (int i = 0; i < allbands.size(); i++) {
+//            buffer.append(allbands.get(i).getJSONString());
+//            if (i != allbands.size() - 1) {
+//                buffer.append(", ");
+//            }
+//        }
+//        buffer.append("]");
         return buffer.toString();
     }
     

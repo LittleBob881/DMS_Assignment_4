@@ -38,7 +38,7 @@ public class ProfileResource {
         String userName = formParams.getFirst("userName");
         profileBean.login(userName);
         
-        return "suceeded"+userName;
+        return "suceeded "+userName;
     }
     
     @POST
