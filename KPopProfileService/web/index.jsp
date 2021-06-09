@@ -13,12 +13,15 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/profile/login" method="POST">
+        <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/userprofile/login" method="POST">
             <p>
                 User Name:
                 <input type="text" name="userName"/>
             </p>
             <input type="submit" value="Login"/>
         </form>
+         <a href="/KPopProfileService/test-resbeans.html">
+         Use the NetBeans RESTful web service tester
+         </a>
     </body>
 </html>

@@ -5,14 +5,21 @@
  */
 package KPopProfileService;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.ejb.EJB;
 import javax.inject.Named;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,26 +33,41 @@ import javax.ws.rs.core.MultivaluedMap;
 public class FavouriteResource {
     
     @EJB
-    FavouriteBean favouriteBean;
+    private FavouriteBean favouriteBean;
+    
+    public FavouriteResource()
+    {}
     
     @GET
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getFavourites(String userNameJSON) {
-        StringTokenizer st = new StringTokenizer(userNameJSON, "\"");
-        String userName = st.nextToken();
+    @Path("{username}")
+    public String getFavourites(@PathParam("username") String userName) {
+        List<Band> favouriteBandsList = favouriteBean.getFavouriteBands(userName);
         
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("[ ");
-        List<Band> allbands = favouriteBean.getFavouriteBands(userName);
-        for (int i = 0; i < allbands.size(); i++) {
-            buffer.append(allbands.get(i).getJSONString());
-            if (i != allbands.size() - 1) {
-                buffer.append(", ");
-            }
+        //parse into json
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        ArrayList<JsonObject> bandObjects = new ArrayList<>();
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        
+        
+        //add each band object into a JSON array
+        for(Band band : favouriteBandsList)
+        {
+            builder.add("name", band.getName());
+            builder.add("generation", band.getGeneration());
+            builder.add("year", band.getYear());
+            builder.add("fandomName", band.getFandomName());
+          
+            arrayBuilder.add(builder.build());
         }
-        buffer.append("]");
-        return buffer.toString();
+        
+        //build json array as object
+        builder.add("favouriteBands", arrayBuilder.build());
+        
+        //return whole JsonObject
+        JsonObject favouriteBandsJSON = builder.build();
+        
+        return favouriteBandsJSON.toString();
     }
     
     @POST
