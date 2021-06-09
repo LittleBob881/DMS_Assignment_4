@@ -26,7 +26,10 @@ import javax.ws.rs.core.MultivaluedMap;
 public class FavouriteResource {
     
     @EJB
-    FavouriteBean favouriteBean;
+    private FavouriteBean favouriteBean;
+    
+    public FavouriteResource()
+    {}
     
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
