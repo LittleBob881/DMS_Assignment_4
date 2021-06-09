@@ -1,7 +1,5 @@
-#ignore build directories
-**/nbproject/private/
-**/nbproject/Makefile-*.mk
-**/nbproject/Package-*.bash
+#ignore build directories\
+/nbproject
 build/
 nbbuild/
 dist/
