@@ -1,2 +1,4 @@
-package com.example.kpopprofileandroidapp;public class Band {
+package com.example.kpopprofileandroidapp;
+
+public class Band {
 }

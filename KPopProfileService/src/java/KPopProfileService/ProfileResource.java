@@ -35,7 +35,7 @@ public class ProfileResource {
       
     @POST
     @Path("/login")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
     public boolean login(MultivaluedMap<String, String> formParams) {
         
         String username = formParams.getFirst("username");
