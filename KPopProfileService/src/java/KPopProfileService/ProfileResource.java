@@ -7,6 +7,7 @@ package KPopProfileService;
 
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.ws.rs.Consumes;
@@ -24,7 +25,8 @@ import javax.ws.rs.core.MultivaluedMap;
 @Named  //for dependency injection EJB
 @Path("/userprofile")
 public class ProfileResource {
-    
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
     @EJB 
     private ProfileBean profileBean;
     
@@ -34,11 +36,12 @@ public class ProfileResource {
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public String login(MultivaluedMap<String, String> formParams) {
-        String userName = formParams.getFirst("userName");
-        profileBean.login(userName);
+    public boolean login(MultivaluedMap<String, String> formParams) {
         
-        return "suceeded "+userName;
+        String username = formParams.getFirst("username");
+        boolean success = profileBean.login(username);
+
+        return success;
     }
     
     @POST

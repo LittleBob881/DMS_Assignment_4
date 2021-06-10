@@ -10,13 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.EJBContext;
-import javax.ejb.Stateful;
+import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -30,7 +28,7 @@ import javax.transaction.UserTransaction;
  * username or kpop favourite
  */
 
-@Stateless
+@Singleton
 @TransactionManagement(javax.ejb.TransactionManagementType.BEAN)
 public class ProfileBean {
     private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -44,7 +42,7 @@ public class ProfileBean {
     
     //populate username list from database
     @PostConstruct
-    public void initialiseRecipeList()
+    public void initialiseUsernameList()
     {        
         if(entityManager != null)
         {
@@ -54,26 +52,29 @@ public class ProfileBean {
         }     
     }
     
-    public void login(String userName) {
+    public boolean login(String username) {
         
         boolean userExists = false;
        
-        if(entityManager != null && !userName.isEmpty())
+        if(entityManager != null && username != null)
         {
             //check if username exists
             for(UserProfile user : usernameList)
             {
-                if(user.getUsername().equalsIgnoreCase(userName))
+                if(user.getUsername().equalsIgnoreCase(username))
+                {
                     userExists = true;
-                logger.info("user exists!");
+                    logger.info("User exists!");
+                }
+                
             }
             
-            //username does not exist, then create a record with username
+            //username does not exist, then create a record with the username
            if(!userExists)
            {
                 //persist in UserProfile object
                 UserProfile newUser = new UserProfile();
-                newUser.setUsername(userName);
+                newUser.setUsername(username);
                     
                     //commit transaction to "kpop_users" database
                  try {
@@ -81,11 +82,16 @@ public class ProfileBean {
                     entityManager.persist(newUser);
                     entityManager.flush();
                     userTransaction.commit();
+                    usernameList.add(newUser);
                 }
                 catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
                     Logger.getLogger(ProfileBean.class.getName()).log(Level.SEVERE, null, ex);
+                    return false;
                 }
            }
-     }     
+           
+           return true;
+        }
+        else return false;
     }
 }

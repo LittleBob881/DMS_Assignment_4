@@ -29,7 +29,7 @@ import javax.transaction.UserTransaction;
 public class FavouriteBean {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
-    MessageSender messageSender = new MessageSender();
+   // MessageSender messageSender = new MessageSender();
 
     //for commits to database
     @Resource
@@ -39,7 +39,7 @@ public class FavouriteBean {
     private List<Band> bandList;
 
     @PostConstruct
-    public void initialiseRecipeList() {
+    public void initialiseUsernameList() {
         if (entityManager != null) {
             bandList = entityManager
                     .createQuery("Select b from Band b", Band.class)
@@ -83,7 +83,7 @@ public class FavouriteBean {
                 .build();
 
         System.out.println("Sending  messages");
-        messageSender.send(faveBandJSON.toString());
+       // messageSender.send(faveBandJSON.toString());
         System.out.println("Sending completed");
     }
 }

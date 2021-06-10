@@ -16,7 +16,7 @@
         <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/userprofile/login" method="POST">
             <p>
                 User Name:
-                <input type="text" name="userName"/>
+                <input type="text" name="username"/>
             </p>
             <input type="submit" value="Login"/>
         </form>
