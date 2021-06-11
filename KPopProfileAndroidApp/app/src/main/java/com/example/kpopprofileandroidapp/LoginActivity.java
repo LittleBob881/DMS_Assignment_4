@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,7 +26,7 @@ public class LoginActivity extends Activity {
 
     EditText usernameInput;
     Button nextButton;
-    private static String KPopProfileServiceLoginURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/userprofile/login";
+    private static String KPopProfileServiceLoginURL= "http://192.168.1.205:8080/KPopProfileService/kpopService/userprofile/login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,11 @@ public class LoginActivity extends Activity {
 
         public class LoginTask extends AsyncTask<String, Void, String>{
 
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .build();
 
             public boolean runPostRequest(String... inputs)
             {
@@ -66,7 +71,7 @@ public class LoginActivity extends Activity {
                         .addEncoded("username", inputs[0])
                         .build();
 
-                System.out.println("request body built "+inputs[0]);
+                System.out.println("request body built with username"+inputs[0]);
 
                 Request postRequest = new Request.Builder()
                         .url(KPopProfileServiceLoginURL)
@@ -75,6 +80,7 @@ public class LoginActivity extends Activity {
 
                 //execute request to RESTful service
                 Call call = client.newCall(postRequest);
+
                 System.out.println("call made");
                 try {
                     Response response = client.newCall(postRequest).execute();
@@ -107,12 +113,14 @@ public class LoginActivity extends Activity {
             {
                 boolean success = Boolean.parseBoolean(result);
 
+
                 //take to main page, pass username through
                 if(success)
                 {
+                    System.out.println("Navigating to main activity..");
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("username", usernameInput.toString());
-
+                    intent.putExtra("username", usernameInput.getText().toString());
+                    startActivity(intent);
                 }
                 else
                 {
