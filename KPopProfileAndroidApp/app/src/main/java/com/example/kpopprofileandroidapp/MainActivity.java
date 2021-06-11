@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         NavController navController = Navigation.findNavController(this, R.id.nav_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+        NavigationUI.setupActionBarWithNavController(this, navController);
+
+        //        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation_view);
+//        MenuItem item = bottomNavigationView.getMenu().findItem(R.id.homeFragment);
+//        bottomNavigationView.setSelectedItemId(item.getItemId());
     }
 
 
