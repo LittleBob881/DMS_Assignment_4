@@ -47,8 +47,7 @@ public class FavouriteBean {
         }
     }
 
-    //TODO: post contruct, initialise list of bands
-    public List<Band> getFavouriteBands(String userName) {
+        public List<Band> getFavouriteBands(String userName) {
         List<FavouriteBand> favouriteBands;
         List<Band> favouriteBandDetails = new ArrayList<>();
 
@@ -76,6 +75,11 @@ public class FavouriteBean {
         return favouriteBandDetails;
     }
 
+    public List getAllBands()
+    {
+        return bandList;
+    }
+    
     public void addFavouriteBand(String bandName, String userName) {
         JsonObject faveBandJSON = Json.createObjectBuilder()
                 .add("userName", userName)

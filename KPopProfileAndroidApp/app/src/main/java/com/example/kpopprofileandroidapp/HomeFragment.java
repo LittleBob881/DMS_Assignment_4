@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment {
         MainActivity activity = (MainActivity) getActivity();
 
             textView.setText("Welcome " + activity.username+ "!");
-        
+
         return view;
     }
 }

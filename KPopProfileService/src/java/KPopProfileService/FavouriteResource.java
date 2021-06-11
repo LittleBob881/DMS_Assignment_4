@@ -29,7 +29,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * Description. 
  */
 @Named 
-@Path("/favourites")
+@Path("/bands")
 public class FavouriteResource {
     
     @EJB
@@ -40,7 +40,37 @@ public class FavouriteResource {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{username}")
+    public String getAllBands()
+    {
+        List<Band> allBandsList = favouriteBean.getAllBands();
+
+        //parse into json
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        
+        //add each band object into a JSON array
+        for(Band band : allBandsList)
+        {
+            builder.add("name", band.getName());
+            builder.add("generation", band.getGeneration());
+            builder.add("year", band.getYear());
+            builder.add("fandomName", band.getFandomName());
+          
+            arrayBuilder.add(builder.build());
+        }
+        
+        //build json array as object
+        builder.add("bands", arrayBuilder.build());
+        
+        //return whole JsonObject
+        JsonObject bandsJSON = builder.build();
+        
+        return bandsJSON.toString();
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("favourite/{username}")
     public String getFavourites(@PathParam("username") String userName) {
         List<Band> favouriteBandsList = favouriteBean.getFavouriteBands(userName);
         
@@ -62,7 +92,7 @@ public class FavouriteResource {
         }
         
         //build json array as object
-        builder.add("favouriteBands", arrayBuilder.build());
+        builder.add("bands", arrayBuilder.build());
         
         //return whole JsonObject
         JsonObject favouriteBandsJSON = builder.build();
@@ -70,26 +100,19 @@ public class FavouriteResource {
         return favouriteBandsJSON.toString();
     }
     
-    @POST
-    @Path("/favourite")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void addFavouriteBand(MultivaluedMap<String, String> formParams) {
-        String bandName = formParams.getFirst("bandName");
-        String userName = formParams.getFirst("userName");
-        favouriteBean.addFavouriteBand(bandName, userName);
-    }
     
     @POST
-    @Path("/favourite")
+    @Path("/addFavourite")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addFavouriteBand(String bandNameJSON) {
-        StringTokenizer st = new StringTokenizer(bandNameJSON, "\"");
-        
-        String bandName = st.nextToken();
-        System.out.println("Band Name: " + bandName);
-        String userName = st.nextToken();
-        System.out.println("User Name: " + userName);
-        
-        favouriteBean.addFavouriteBand(bandName, userName);
+    public void addFavouriteBand(String bandNameJson) {
+        //TODO: extract username and bandname from JSON, add to favourites via EJB
+//        StringTokenizer st = new StringTokenizer(bandName, "\"");
+//        
+//        String bandName = st.nextToken();
+//        System.out.println("Band Name: " + bandName);
+//        String userName = st.nextToken();
+//        System.out.println("User Name: " + userName);
+//        
+        //favouriteBean.addFavouriteBand(bandName, username);
     }
 }
