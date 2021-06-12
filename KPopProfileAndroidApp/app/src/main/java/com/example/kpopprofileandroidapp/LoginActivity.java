@@ -26,7 +26,7 @@ public class LoginActivity extends Activity {
 
     EditText usernameInput;
     Button nextButton;
-    private static String KPopProfileServiceLoginURL= "http://192.168.1.205:8080/KPopProfileService/kpopService/userprofile/login";
+    private static String KPopProfileServiceLoginURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/userprofile/login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class LoginActivity extends Activity {
                         .addEncoded("username", inputs[0])
                         .build();
 
-                System.out.println("request body built with username"+inputs[0]);
+                System.out.println("request body built with username: "+inputs[0]);
 
                 Request postRequest = new Request.Builder()
                         .url(KPopProfileServiceLoginURL)
@@ -81,7 +81,8 @@ public class LoginActivity extends Activity {
                 //execute request to RESTful service
                 Call call = client.newCall(postRequest);
 
-                System.out.println("call made");
+                System.out.println("call to login made");
+
                 try {
                     Response response = client.newCall(postRequest).execute();
                     ResponseBody responseBody = response.body();

@@ -5,12 +5,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,9 +58,17 @@ public class BandFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+//        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation_view);
+//        bottomNavigationView.setSelectedItemId(R.id.bandFragment);
 
-        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation_view);
-        bottomNavigationView.setSelectedItemId(R.id.bandFragment);
+        //link viewmodel to this fragment
+        BandViewModel viewModel = ViewModelProviders.of(this).get(BandViewModel.class);
 
+        viewModel.initialiseAllBands();
+
+        for(Band b : viewModel.bandList)
+        {
+            System.out.println("BAND NAME - "+b.getName());
+        }
     }
 }

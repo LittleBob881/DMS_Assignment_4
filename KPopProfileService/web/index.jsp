@@ -20,6 +20,13 @@
             </p>
             <input type="submit" value="Login"/>
         </form>
+        <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/bands/favourite/" method="GET">
+            <p>
+                User Name (getfavourites):
+                <input type="text" name="username"/>
+            </p>
+            <input type="submit" value="Login"/>
+        </form>
          <a href="/KPopProfileService/test-resbeans.html">
          Use the NetBeans RESTful web service tester
          </a>
