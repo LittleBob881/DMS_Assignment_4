@@ -33,11 +33,11 @@
          <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/bands/addfavourite" method="POST">
             <p>
                 UserName:
-                <input type="text" name="userNameJson"/>
+                <input type="text" name="userName"/>
             </p>
             <p>
                 BandName:
-                <input type="text" name="bandNameJson"/>
+                <input type="text" name="bandName"/>
             </p>
             <input type="submit" value="GO"/>
         </form>

@@ -15,6 +15,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -105,18 +106,17 @@ public class BandResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("addfavourite")
-    public String addFavouriteBand(String bandNameJson) {
-        favouriteBean.addFavouriteBand("testing", "hewwo >.<");
-        System.out.println("bandNameJson?? " + bandNameJson);
+    public String addFavouriteBand(String favouriteJson) {
         //TODO: extract username and bandname from JSON, add to favourites via EJB
-//        StringTokenizer st = new StringTokenizer(bandName, "\"");
-//        
-//        String bandName = st.nextToken();
-//        System.out.println("Band Name: " + bandName);
-//        String userName = st.nextToken();
-//        System.out.println("User Name: " + userName);
-//        
-        //favouriteBean.addFavouriteBand(bandName, username);
+        
+        StringTokenizer st = new StringTokenizer(favouriteJson, "\"");
+        String bandName = st.nextToken();
+        System.out.println("Band Name: " + bandName);
+        st.nextToken();
+        String userName = st.nextToken();
+        System.out.println("User Name: " + userName);
+        
+        favouriteBean.addFavouriteBand(bandName, userName);
         
         //TODO: return JSON of full band details
         return "";
@@ -125,16 +125,13 @@ public class BandResource {
     @POST
     @Path("addfavourite")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
-    public boolean addFavouriteBand(MultivaluedMap<String, String> formParams) {
+    public void addFavouriteBand(MultivaluedMap<String, String> formParams) {
         
-        String userName = formParams.getFirst("username");
+        String userName = formParams.getFirst("userName");
         String bandName = formParams.getFirst("bandName");
         
         System.out.println("Add Fave: " + userName + " " + bandName);
         
-        boolean success = false;
-        favouriteBean.addFavouriteBand("testing", "hewwo >.<");
-        
-        return success;
+        favouriteBean.addFavouriteBand(bandName, userName);
     }
 }

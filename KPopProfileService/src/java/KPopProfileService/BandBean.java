@@ -82,12 +82,13 @@ public class BandBean {
 
     public void addFavouriteBand(String bandName, String userName) {
         JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("method", "addFaveBand")
                 .add("userName", userName)
                 .add("bandName", bandName)
                 .build();
 
         System.out.println("Sending  messages");
-         messageSender.send(faveBandJSON.toString());
+        messageSender.send(faveBandJSON.toString());
         System.out.println("Sending completed");
     }
 }
