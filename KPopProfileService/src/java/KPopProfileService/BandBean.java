@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -29,7 +30,7 @@ import javax.transaction.UserTransaction;
 public class BandBean {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
-   // MessageSender messageSender = new MessageSender();
+    MessageSender messageSender = new MessageSender();
 
     //for commits to database
     @Resource
@@ -47,7 +48,7 @@ public class BandBean {
         }
     }
 
-        public List<Band> getFavouriteBands(String userName) {
+    public List<Band> getFavouriteBands(String userName) {
         List<FavouriteBand> favouriteBands;
         List<Band> favouriteBandDetails = new ArrayList<>();
 
@@ -75,11 +76,10 @@ public class BandBean {
         return favouriteBandDetails;
     }
 
-    public List getAllBands()
-    {
+    public List getAllBands() {
         return bandList;
     }
-    
+
     public void addFavouriteBand(String bandName, String userName) {
         JsonObject faveBandJSON = Json.createObjectBuilder()
                 .add("userName", userName)
@@ -87,7 +87,7 @@ public class BandBean {
                 .build();
 
         System.out.println("Sending  messages");
-       // messageSender.send(faveBandJSON.toString());
+         messageSender.send(faveBandJSON.toString());
         System.out.println("Sending completed");
     }
 }

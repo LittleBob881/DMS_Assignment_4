@@ -3,9 +3,10 @@
  * KPop Profile RESTFul Service
  * Elizabeth Cammell (18030282) & Bernadette Cruz (17985971)
  */
-package kpopprofilemessagesender;
+package KPopProfileService;
 
-import javax.annotation.Resource;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -13,6 +14,9 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  *
@@ -23,12 +27,18 @@ public class MessageSender {
     private Connection conn;
     private Session session;
     private MessageProducer producer;
-    @Resource(mappedName = "jms/ConnectionFactory")
     private static ConnectionFactory connectionFactory;
-    @Resource(mappedName = "jms/KPopProfileQueue")
     private static Queue queue;
 
     public MessageSender() {
+        try {
+            Context ctx = new InitialContext();
+            connectionFactory = (ConnectionFactory) ctx.lookup("jms/ConnectionFactory");
+            queue = (Queue) ctx.lookup("jms/KPopProfileQueue");
+        } catch (NamingException ex) {
+            Logger.getLogger(MessageSender.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         try {
             // obtain a connection to the JMS provider
             conn = connectionFactory.createConnection();

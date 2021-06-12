@@ -106,6 +106,8 @@ public class BandResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("addfavourite")
     public String addFavouriteBand(String bandNameJson) {
+        favouriteBean.addFavouriteBand("testing", "hewwo >.<");
+        System.out.println("bandNameJson?? " + bandNameJson);
         //TODO: extract username and bandname from JSON, add to favourites via EJB
 //        StringTokenizer st = new StringTokenizer(bandName, "\"");
 //        
@@ -118,5 +120,21 @@ public class BandResource {
         
         //TODO: return JSON of full band details
         return "";
+    }
+    
+    @POST
+    @Path("addfavourite")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
+    public boolean addFavouriteBand(MultivaluedMap<String, String> formParams) {
+        
+        String userName = formParams.getFirst("username");
+        String bandName = formParams.getFirst("bandName");
+        
+        System.out.println("Add Fave: " + userName + " " + bandName);
+        
+        boolean success = false;
+        favouriteBean.addFavouriteBand("testing", "hewwo >.<");
+        
+        return success;
     }
 }
