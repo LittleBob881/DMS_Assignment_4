@@ -24,13 +24,13 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 @Named  //for dependency injection EJB
 @Path("/userprofile")
-public class ProfileResource {
+public class UserProfileResource {
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @EJB 
     private ProfileBean profileBean;
     
-    public ProfileResource()
+    public UserProfileResource()
     {}
       
     @POST

@@ -26,7 +26,7 @@ import javax.transaction.UserTransaction;
  */
 @Stateless
 @TransactionManagement(javax.ejb.TransactionManagementType.BEAN)
-public class FavouriteBean {
+public class BandBean {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
    // MessageSender messageSender = new MessageSender();

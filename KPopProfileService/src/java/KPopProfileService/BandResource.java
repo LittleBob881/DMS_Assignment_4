@@ -30,12 +30,12 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 @Named 
 @Path("/bands")
-public class FavouriteResource {
+public class BandResource {
     
     @EJB
-    private FavouriteBean favouriteBean;
+    private BandBean favouriteBean;
     
-    public FavouriteResource()
+    public BandResource()
     {}
     
     @GET
@@ -84,7 +84,7 @@ public class FavouriteResource {
         for(Band band : favouriteBandsList)
         {
             builder.add("name", band.getName());
-            builder.add("generation", band.getGeneration());
+            builder.add("generati   on", band.getGeneration());
             builder.add("year", band.getYear());
             builder.add("fandomName", band.getFandomName());
           
@@ -102,9 +102,9 @@ public class FavouriteResource {
     
     
     @POST
-    @Path("/addFavourite")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void addFavouriteBand(String bandNameJson) {
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("addfavourite")
+    public String addFavouriteBand(String bandNameJson) {
         //TODO: extract username and bandname from JSON, add to favourites via EJB
 //        StringTokenizer st = new StringTokenizer(bandName, "\"");
 //        
@@ -114,5 +114,8 @@ public class FavouriteResource {
 //        System.out.println("User Name: " + userName);
 //        
         //favouriteBean.addFavouriteBand(bandName, username);
+        
+        //TODO: return JSON of full band details
+        return "";
     }
 }
