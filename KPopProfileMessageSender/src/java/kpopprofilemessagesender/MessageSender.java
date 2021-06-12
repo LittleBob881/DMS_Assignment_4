@@ -3,23 +3,23 @@
  * KPop Profile RESTFul Service
  * Elizabeth Cammell (18030282) & Bernadette Cruz (17985971)
  */
-package KPopProfileService;
+package kpopprofilemessagesender;
 
-import java.util.Queue;
 import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
 /**
  *
- * Description. 
+ *
  */
 public class MessageSender {
+
     private Connection conn;
     private Session session;
     private MessageProducer producer;
@@ -35,13 +35,13 @@ public class MessageSender {
             // obtain an untransacted context for producing messages
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
             // obtain a producer of messages to send to the queue
-            producer = session.createProducer((Destination) queue);
+            producer = session.createProducer(queue);
         } catch (JMSException e) {
             System.err.println("Unable to open connection: " + e);
         }
     }
 
-    public void send(String JSONFaveBand) { 
+    public void send(String JSONFaveBand) {
         try {
             TextMessage message = session.createTextMessage();
             message.setText(JSONFaveBand);
@@ -64,4 +64,5 @@ public class MessageSender {
             System.err.println("Unable to close connection: " + e);
         }
     }
+
 }
