@@ -85,12 +85,13 @@ public class BandRecyclerViewAdapter extends RecyclerView.Adapter<BandRecyclerVi
                 {
                     holder.isFavourite = false;
                     holder.favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+                    viewModel.addOrRemoveFavouriteBand(username, bandList.get(position).getName(), false);
                 }
                 else
                 {
                     holder.isFavourite = true;
                     holder.favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
-                    viewModel.addFavouriteBand(username, bandList.get(position).getName());
+                    viewModel.addOrRemoveFavouriteBand(username, bandList.get(position).getName(), true);
                 }
 
             }

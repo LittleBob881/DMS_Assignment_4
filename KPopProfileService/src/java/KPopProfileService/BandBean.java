@@ -86,10 +86,10 @@ public class BandBean {
         return bandList;
     }
     
-    public boolean addFavouriteBand(String bandName, String userName) {
+    public boolean addFavouriteBand(String bandName, String username) {
         FavouriteBand favBand = new FavouriteBand();
         favBand.setBandName(bandName);
-        favBand.setUsername(userName);
+        favBand.setUsername(username);
 
         if(entityManager != null)
         {
@@ -110,5 +110,29 @@ public class BandBean {
 //        
 //       // messageSender.send(faveBandJSON.toString());
 //        System.out.println("Sending completed");
+    }
+    
+    public boolean removeFavouriteBand(String bandName, String username)
+    {
+        if(entityManager != null)
+        {
+            try { //remove favouriteband
+                userTransaction.begin();
+                Query query = entityManager.createQuery("DELETE from FavouriteBand f WHERE "
+                        + "f.username = :username AND f.bandName = :bandName", FavouriteBand.class);
+                query.setParameter("username", username);
+                query.setParameter("bandName", bandName).executeUpdate();
+                    
+                entityManager.flush();
+                userTransaction.commit();
+
+            } catch (RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException | SystemException | NotSupportedException ex) {
+                Logger.getLogger(BandBean.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        }
+        System.out.println("POST REQUEST TO REMOVE FAVOURITE BAND DONE!");
+        
+        return true;
     }
 }

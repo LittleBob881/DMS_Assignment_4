@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -37,14 +38,14 @@ import okhttp3.ResponseBody;
 public class BandViewModel extends ViewModel {      //my laptop ip address - 192.168.1.205
     private static String KPopProfileServiceBandResourceURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/bands/";
     private static String GETFavouriteBandsURLFragment = "favourite/";
-    private static String POSTFavouriteBandUrlFragment = "addfavourite";
+    private static String POSTAddFavouriteBandUrlFragment = "addfavourite";
+    private static String POSTRemoveFavouriteBandUrlFragment = "removefavourite";
 
 
     public List<Band> bandList = new ArrayList<>();
     public List<String> favouriteBands = new ArrayList<>();
 
-    // is triggered when activity or framgnent is linked to an instance of this viewmodel class.
-
+    // this methods is called when activity or fragmeent is linked to an instance of this viewmodel class.
     public void initialiseAllBands()
     {
         BandTask bandTask = new BandTask();
@@ -107,12 +108,19 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
         }
     }
 
-    public boolean addFavouriteBand(String username, String bandName)
+    //true = add, false = remove
+    public boolean addOrRemoveFavouriteBand(String username, String bandName, boolean addBand)
     {
-        String parameters[] = new String[3];
+        String parameters[] = new String[4];
         parameters[0] = "POST";
-        parameters[1] = username;
-        parameters[2] = bandName;
+
+        if(addBand)
+            parameters[1] = "add";
+        else
+            parameters[1] = "remove";
+
+        parameters[2] = username;
+        parameters[3] = bandName;
 
         BandTask bandTask = new BandTask();
         String response = "";
@@ -154,36 +162,49 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
             //check if GET or POST
             if(strings[0].equalsIgnoreCase("GET"))
             {
-                //if GET has parameters (get list of favourite band)
+                //if GET has parameters (get list of user's favourite bands)
+                HttpUrl url;
                 if(strings.length == 2) {
-                    restRequest = new Request.Builder()
-                            .url(KPopProfileServiceBandResourceURL + GETFavouriteBandsURLFragment + strings[1])
-                            .get()
-                            .build();
-
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL + GETFavouriteBandsURLFragment + strings[1]);
                 }
                 else
                 {
-                    restRequest = new Request.Builder()
-                            .url(KPopProfileServiceBandResourceURL)
-                            .get()
-                            .build();
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL);
                 }
 
+                restRequest = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .build();
             }
             //if POST request, i.e. add a new favourite band for the username.
             else if(strings[0].equalsIgnoreCase("POST"))
             {
                 //add username and band name as a form parameters for  server to retrieve
                 RequestBody body = new FormBody.Builder()
-                        .addEncoded("username", strings[1])
-                        .addEncoded("bandName", strings[2])
+                        .addEncoded("username", strings[2])
+                        .addEncoded("bandName", strings[3])
                         .build();
 
+
+                //determine whether add or remove favourite band:
+                System.out.println("PARAMETER IS ----> "+strings[1]);
+                HttpUrl url;
+                if(strings[1].equalsIgnoreCase("add"))
+                {
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL+POSTAddFavouriteBandUrlFragment);
+                }
+                else
+                {
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL+POSTRemoveFavouriteBandUrlFragment);
+                }
+
+
                 restRequest = new Request.Builder()
-                        .url(KPopProfileServiceBandResourceURL + POSTFavouriteBandUrlFragment)
+                        .url(url)
                         .post(body)
                         .build();
+
             }
 
             System.out.println(strings[0]+" call to band resource made");
@@ -211,16 +232,3 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
     }
 
     }
-    //JSON VERSION
-//    JSONObject jsonObject = new JSONObject();
-//                try {
-//                    jsonObject.put("username", strings[1]);
-//                    jsonObject.put("bandName", strings[2]);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                MediaType jsonType = MediaType.parse("application/json; charset=utf-8");
-//
-//                //add json as input to POST request
-//                RequestBody body = RequestBody.create(jsonType, jsonObject.toString());

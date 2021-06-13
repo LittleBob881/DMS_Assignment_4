@@ -30,7 +30,7 @@
          <a href="/KPopProfileService/test-resbeans.html">
          Use the NetBeans RESTful web service tester
          </a>
-         <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/bands/addfavourite" method="POST">
+         <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/bands/removefavourite" method="POST">
             <p>
                 UserName:
                 <input type="text" name="username"/>

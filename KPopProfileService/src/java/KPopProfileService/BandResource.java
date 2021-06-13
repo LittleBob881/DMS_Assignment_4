@@ -102,12 +102,24 @@ public class BandResource {
     @POST
     @Path("addfavourite")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
-    public boolean login(MultivaluedMap<String, String> formParams) {
+    public boolean addFavouriteBand(MultivaluedMap<String, String> formParams) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         //extract username and bandname from form, call EJB bean to add the favourite band into database\                        
         String username = formParams.getFirst("username");
         String bandName = formParams.getFirst("bandName");
         
         return favouriteBean.addFavouriteBand(bandName, username);
+    }
+    
+    @POST
+    @Path("removefavourite")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
+    public boolean removeFavouriteBand(MultivaluedMap<String, String> formParams) {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        //extract username and bandname from form, call EJB bean to add the favourite band into database\                        
+        String username = formParams.getFirst("username");
+        String bandName = formParams.getFirst("bandName");
+        
+        return favouriteBean.removeFavouriteBand(bandName, username);
     }
 }
