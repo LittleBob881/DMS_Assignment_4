@@ -7,9 +7,12 @@ package KPopProfileMessageBean;
 
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionManagement;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
@@ -18,6 +21,11 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 
 /**
  *
@@ -31,7 +39,9 @@ import javax.json.JsonObject;
         @ActivationConfigProperty(propertyName = "destinationType",
                     propertyValue = "javax.jms.Queue")
         })
+@TransactionManagement(javax.ejb.TransactionManagementType.BEAN)
 public class MessageBean {
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     //for commits to database
     @Resource
@@ -93,7 +103,30 @@ public class MessageBean {
         return json;
     }
 
-    private void addFaveBand(JsonObject bandJson) {
+    //add favourite band of user to database and commit transaction
+    private boolean addFaveBand(JsonObject bandJson) {
+        String username = bandJson.getString("userName");
+        String bandName = bandJson.getString("bandName");
+        
+        FavouriteBand newFav = new FavouriteBand();
+        newFav.setBandName(bandName);
+        newFav.setUsername(username);
+        
         //TODO: Connect to db and add band o.o
+        if(entityManager != null)
+        {
+            try {
+                userTransaction.begin();
+                entityManager.persist(newFav);
+                entityManager.flush();
+                userTransaction.commit();
+                logger.info("Transaction done! "+username+" -> "+bandName);
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                Logger.getLogger(MessageBean.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        }   
+        
+        return true;
     }
 }
