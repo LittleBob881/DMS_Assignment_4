@@ -63,7 +63,7 @@ public class BandFragment extends Fragment {
 
 
         //dynamic adapter
-        BandRecyclerViewAdapter adapter = new BandRecyclerViewAdapter(this.getContext(), viewModel.bandList, viewModel.favouriteBands);
+        BandRecyclerViewAdapter adapter = new BandRecyclerViewAdapter(this.getContext(), activity.username, viewModel);
         bandRecyclerView.setAdapter(adapter);
         bandRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }

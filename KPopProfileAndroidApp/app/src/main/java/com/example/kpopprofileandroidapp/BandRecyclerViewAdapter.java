@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -15,21 +16,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.reflect.Field;
 import java.util.List;
+
 /*
     Handles the Kpop Band list in the Band Fragment screen. Users can also add/remove favourites via the heart/unheart icon
  */
 public class BandRecyclerViewAdapter extends RecyclerView.Adapter<BandRecyclerViewAdapter.RecyclerViewHolder>{
 
+    String username;
     Context context;
     List<Band> bandList;
     List<String> favouriteBands;
     Class res = R.drawable.class;
+    BandViewModel viewModel;
 
-    public BandRecyclerViewAdapter(Context context, List bandList, List favouriteBands)
+    public BandRecyclerViewAdapter(Context context, String username, BandViewModel viewModel)
     {
         this.context = context;
-        this.bandList = bandList;
-        this.favouriteBands = favouriteBands;
+        this.viewModel = viewModel;
+        this.username = username;
+        this.bandList = viewModel.bandList;
+        this.favouriteBands = viewModel.favouriteBands;
     }
 
     @NonNull
@@ -64,13 +70,31 @@ public class BandRecyclerViewAdapter extends RecyclerView.Adapter<BandRecyclerVi
         //set favourite icon
         if(favouriteBands.contains(bandList.get(position).getName()))
         {
+            holder.isFavourite = true;
             holder.favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
+
         }
         else
             holder.favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_border_24);
 
-        //set listener for imagebutton with heart icon, to favorurite/unfavourite bands.
-        
+        //set listener for imagebutton with heart icon, to favourite/unfavourite bands.
+        holder.favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { //TODO: MAKE POST REQUEST TO ADD/REMOVE FAVOURITE BAND?
+                if(holder.isFavourite)
+                {
+                    holder.isFavourite = false;
+                    holder.favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+                }
+                else
+                {
+                    holder.isFavourite = true;
+                    holder.favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
+                    viewModel.addFavouriteBand(username, bandList.get(position).getName());
+                }
+
+            }
+        });
 
 
     }
@@ -80,8 +104,9 @@ public class BandRecyclerViewAdapter extends RecyclerView.Adapter<BandRecyclerVi
         return bandList.size();
     }
 
+    //references ONE item's view and its components from the recyclerview List
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-
+        boolean isFavourite = false;
         TextView bandNameText, yearText, generationText, fandomText;
         ImageView imageView;
         ImageButton favouriteButton;

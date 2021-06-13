@@ -87,11 +87,6 @@ public class BandBean {
     }
     
     public boolean addFavouriteBand(String bandName, String userName) {
-        JsonObject faveBandJSON = Json.createObjectBuilder()
-                .add("userName", userName)
-                .add("bandName", bandName)
-                .build();
-
         FavouriteBand favBand = new FavouriteBand();
         favBand.setBandName(bandName);
         favBand.setUsername(userName);
@@ -109,6 +104,7 @@ public class BandBean {
             }
         }
         
+        System.out.println("POST REQUEST TO ADD FAVOURITE BAND DONE!");
         return true;
 //        System.out.println("Sending  messages");
 //        

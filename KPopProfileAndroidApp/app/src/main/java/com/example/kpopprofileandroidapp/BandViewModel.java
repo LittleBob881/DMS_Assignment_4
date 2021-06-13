@@ -37,7 +37,7 @@ import okhttp3.ResponseBody;
 public class BandViewModel extends ViewModel {      //my laptop ip address - 192.168.1.205
     private static String KPopProfileServiceBandResourceURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/bands/";
     private static String GETFavouriteBandsURLFragment = "favourite/";
-    private static String POSTFavouriteBandUrlFragment = "addFavourite";
+    private static String POSTFavouriteBandUrlFragment = "addfavourite";
 
 
     public List<Band> bandList = new ArrayList<>();
@@ -107,10 +107,28 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
         }
     }
 
-//    public Band addFavouriteBand(String bandName, String username)
-//    {
-//
-//    }
+    public boolean addFavouriteBand(String username, String bandName)
+    {
+        String parameters[] = new String[3];
+        parameters[0] = "POST";
+        parameters[1] = username;
+        parameters[2] = bandName;
+
+        BandTask bandTask = new BandTask();
+        String response = "";
+        try {
+             response = bandTask.execute(parameters).get();
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Boolean.parseBoolean(response);
+    }
 
     public class BandTask extends AsyncTask<String, Void, String> {
 
@@ -121,6 +139,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
+
 
         @Override
         protected String doInBackground(String... strings) {
@@ -155,19 +174,11 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
             //if POST request, i.e. add a new favourite band for the username.
             else if(strings[0].equalsIgnoreCase("POST"))
             {
-                //put into JSON object
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("bandName", strings[1]);
-                    jsonObject.put("username", strings[2]);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                MediaType jsonType = MediaType.parse("application/json; charset=utf-8");
-
-                //add json as input to POST request
-                RequestBody body = RequestBody.create(jsonType, jsonObject.toString());
+                //add username and band name as a form parameters for  server to retrieve
+                RequestBody body = new FormBody.Builder()
+                        .addEncoded("username", strings[1])
+                        .addEncoded("bandName", strings[2])
+                        .build();
 
                 restRequest = new Request.Builder()
                         .url(KPopProfileServiceBandResourceURL + POSTFavouriteBandUrlFragment)
@@ -200,3 +211,16 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
     }
 
     }
+    //JSON VERSION
+//    JSONObject jsonObject = new JSONObject();
+//                try {
+//                    jsonObject.put("username", strings[1]);
+//                    jsonObject.put("bandName", strings[2]);
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                MediaType jsonType = MediaType.parse("application/json; charset=utf-8");
+//
+//                //add json as input to POST request
+//                RequestBody body = RequestBody.create(jsonType, jsonObject.toString());

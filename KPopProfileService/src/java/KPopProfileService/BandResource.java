@@ -5,10 +5,8 @@
  */
 package KPopProfileService;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.json.Json;
@@ -42,7 +40,7 @@ public class BandResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllBands()
     {
-        System.out.println("TRIGGERED!");
+        System.out.println("GET ALL BANDS TRIGGERED!");
         List<Band> allBandsList = favouriteBean.getAllBands();
 
         //parse into json
@@ -100,27 +98,16 @@ public class BandResource {
         
         return favouriteBandsJSON.toString();
     }
-    
+   
     @POST
-    @Path("/login")
+    @Path("addfavourite")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
-    public boolean addFavouriteBand(MultivaluedMap<String, String> formParams) {
-        
+    public boolean login(MultivaluedMap<String, String> formParams) {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        //extract username and bandname from form, call EJB bean to add the favourite band into database\                        
         String username = formParams.getFirst("username");
         String bandName = formParams.getFirst("bandName");
         
-
         return favouriteBean.addFavouriteBand(bandName, username);
-    }
-    
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("addfavourite")
-    public boolean addFavouriteBand(String bandNameJson) {
-        //TODO: extract username and bandname from JSON, add to favourites via EJB
-        // JsonObjectBuilder builder = Json.createObjectBuilder()
-        
-        //TODO: return JSON of full band details
-        return true;
     }
 }
