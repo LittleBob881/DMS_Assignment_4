@@ -43,7 +43,6 @@ public class BandResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllBands()
     {
-        System.out.println("TRIGGERED!");
         List<Band> allBandsList = favouriteBean.getAllBands();
 
         //parse into json
@@ -86,7 +85,7 @@ public class BandResource {
         for(Band band : favouriteBandsList)
         {
             builder.add("name", band.getName());
-            builder.add("generati   on", band.getGeneration());
+            builder.add("generation", band.getGeneration());
             builder.add("year", band.getYear());
             builder.add("fandomName", band.getFandomName());
           

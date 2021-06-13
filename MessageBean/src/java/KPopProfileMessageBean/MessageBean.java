@@ -34,10 +34,10 @@ import javax.json.JsonObject;
 public class MessageBean {
 
     //for commits to database
-//    @Resource
-//    private UserTransaction userTransaction;
-//    @PersistenceContext(unitName = "MessageBeanPU")
-//    private EntityManager entityManager;
+    @Resource
+    private UserTransaction userTransaction;
+    @PersistenceContext(unitName = "MessageBeanPU")
+    private EntityManager entityManager;
 
     public MessageBean() {
     }
