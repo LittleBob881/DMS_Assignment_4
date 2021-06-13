@@ -40,14 +40,10 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
     private static String POSTFavouriteBandUrlFragment = "addFavourite";
 
 
-    public List<Band> bandList;
-
-    MutableLiveData<List<Band>> favouriteList;
+    public List<Band> bandList = new ArrayList<>();
+    public List<String> favouriteBands = new ArrayList<>();
 
     // is triggered when activity or framgnent is linked to an instance of this viewmodel class.
-//    public BandViewModel()
-//    {
-//    }
 
     public void initialiseAllBands()
     {
@@ -57,9 +53,6 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
             String response = bandTask.execute("GET").get();
             JSONObject jsonObject = new JSONObject(response);
             JSONArray bands = jsonObject.getJSONArray("bands");
-
-            //initialise allBandList
-            bandList = new ArrayList<>();
 
             for(int i = 0; i < bands.length(); i++)
             {
@@ -84,11 +77,35 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
     }
 
 
+    public void getFavouriteBands(String username)
+    {
+        BandTask bandTask = new BandTask();
+        String parameters[] = new String[2];
+        parameters[0] = "GET";
+        parameters[1] = username;
 
-//    public List getFavouriteBands(String username)
-//    {
-//
-//    }
+        try {
+            String response = bandTask.execute(parameters).get();
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray favBands = jsonObject.getJSONArray("bands");
+
+            for(int i = 0; i < favBands.length(); i++)
+            {
+                //retrieve object in JSON array
+                JSONObject bandObject = favBands.getJSONObject(i);
+
+                //add name of  favourite bands
+                String bandName = bandObject.getString("name");
+                favouriteBands.add(bandName);
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 //    public Band addFavouriteBand(String bandName, String username)
 //    {
@@ -135,6 +152,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
                 }
 
             }
+            //if POST request, i.e. add a new favourite band for the username.
             else if(strings[0].equalsIgnoreCase("POST"))
             {
                 //put into JSON object
@@ -169,7 +187,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
 
                 }
                 else {
-                    System.err.println("Something went wrong with the POST request."+response.code());
+                    System.err.println("Something went wrong with the RESTFUL method request."+response.code());
                 }
 
             } catch (Exception e) {

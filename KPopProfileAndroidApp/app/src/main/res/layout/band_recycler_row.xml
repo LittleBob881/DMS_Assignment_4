@@ -100,6 +100,23 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/imageCardView"
                 app:layout_constraintTop_toBottomOf="@+id/generationText" />
+
+
+            <ImageButton
+                android:id="@+id/favouriteButton"
+                style="@style/ToggleButtonWithIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="28dp"
+                android:layout_marginRight="28dp"
+                app:backgroundTint="#BCA6A6"
+                app:iconTint="#100C0C"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/generationText"
+                app:layout_constraintVertical_bias="0.384" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

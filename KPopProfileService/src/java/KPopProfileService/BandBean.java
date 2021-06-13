@@ -7,6 +7,7 @@ package KPopProfileService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -17,6 +18,11 @@ import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -80,14 +86,33 @@ public class BandBean {
         return bandList;
     }
     
-    public void addFavouriteBand(String bandName, String userName) {
+    public boolean addFavouriteBand(String bandName, String userName) {
         JsonObject faveBandJSON = Json.createObjectBuilder()
                 .add("userName", userName)
                 .add("bandName", bandName)
                 .build();
 
-        System.out.println("Sending  messages");
-       // messageSender.send(faveBandJSON.toString());
-        System.out.println("Sending completed");
+        FavouriteBand favBand = new FavouriteBand();
+        favBand.setBandName(bandName);
+        favBand.setUsername(userName);
+
+        if(entityManager != null)
+        {
+            try {
+                userTransaction.begin();
+                entityManager.persist(favBand);
+                entityManager.flush();
+                userTransaction.commit();
+            } catch (RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException | SystemException | NotSupportedException ex) {
+                Logger.getLogger(BandBean.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        }
+        
+        return true;
+//        System.out.println("Sending  messages");
+//        
+//       // messageSender.send(faveBandJSON.toString());
+//        System.out.println("Sending completed");
     }
 }

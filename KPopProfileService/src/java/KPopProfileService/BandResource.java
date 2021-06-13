@@ -85,7 +85,7 @@ public class BandResource {
         for(Band band : favouriteBandsList)
         {
             builder.add("name", band.getName());
-            builder.add("generati   on", band.getGeneration());
+            builder.add("generation", band.getGeneration());
             builder.add("year", band.getYear());
             builder.add("fandomName", band.getFandomName());
           
@@ -101,22 +101,26 @@ public class BandResource {
         return favouriteBandsJSON.toString();
     }
     
+    @POST
+    @Path("/login")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
+    public boolean addFavouriteBand(MultivaluedMap<String, String> formParams) {
+        
+        String username = formParams.getFirst("username");
+        String bandName = formParams.getFirst("bandName");
+        
+
+        return favouriteBean.addFavouriteBand(bandName, username);
+    }
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("addfavourite")
-    public String addFavouriteBand(String bandNameJson) {
+    public boolean addFavouriteBand(String bandNameJson) {
         //TODO: extract username and bandname from JSON, add to favourites via EJB
-//        StringTokenizer st = new StringTokenizer(bandName, "\"");
-//        
-//        String bandName = st.nextToken();
-//        System.out.println("Band Name: " + bandName);
-//        String userName = st.nextToken();
-//        System.out.println("User Name: " + userName);
-//        
-        //favouriteBean.addFavouriteBand(bandName, username);
+        // JsonObjectBuilder builder = Json.createObjectBuilder()
         
         //TODO: return JSON of full band details
-        return "";
+        return true;
     }
 }

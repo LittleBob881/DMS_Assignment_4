@@ -52,15 +52,18 @@ public class BandFragment extends Fragment {
         //link viewmodel to this fragment
         BandViewModel viewModel = ViewModelProviders.of(this).get(BandViewModel.class);
 
-        //make viewmodel do a GET request to fetch all bands
-        viewModel.initialiseAllBands();
+        MainActivity activity = (MainActivity) getActivity();
 
-        //assign recycler view
+        //make viewmodel do a GET request to fetch all bands and band favourites for this user
+        viewModel.initialiseAllBands();
+        viewModel.getFavouriteBands(activity.username);
+
+        //assign recycler view to show band list
         bandRecyclerView = view.findViewById(R.id.bandRecyclerView);
 
 
         //dynamic adapter
-        BandRecyclerViewAdapter adapter = new BandRecyclerViewAdapter(this.getContext(), viewModel.bandList);
+        BandRecyclerViewAdapter adapter = new BandRecyclerViewAdapter(this.getContext(), viewModel.bandList, viewModel.favouriteBands);
         bandRecyclerView.setAdapter(adapter);
         bandRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
