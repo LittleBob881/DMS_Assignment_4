@@ -1,5 +1,6 @@
 package com.example.kpopprofileandroidapp;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.nfc.NfcEvent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -17,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.sql.SQLOutput;
 import java.util.List;
@@ -128,6 +131,7 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
             System.out.println("BAND I LIKE -> "+i+". "+bands[i]);
         }
         System.out.println("~~~~~~~~~~~~~ DISPLAY RESUME!!!");
+        showFriendRequestPopup(new String(records[0].getPayload()));
     }
 
     static String displayByteArray(byte[] bytes) {
@@ -139,6 +143,20 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
         return res;
     }
 
+    //show popup for friend request component
+    public void showFriendRequestPopup(String sender)
+    {
+        String friendRequestMessage = "New Friend request from: "+
+        TextView senderText = findViewById(R.id.friendRequestTextView);
+        senderText.setText(sender);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        View friendPopup = getLayoutInflater().inflate(R.layout.friend_popup, null);
+
+        dialogBuilder.setView(friendPopup);
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
+    }
 
     //get friend request message from sender (via android beam)
     private NdefMessage getNdefMessages(Intent intent) {
