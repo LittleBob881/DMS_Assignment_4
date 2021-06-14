@@ -1,9 +1,13 @@
 package com.example.kpopprofileandroidapp;
 
 import android.graphics.Color;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -11,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import javax.security.auth.callback.Callback;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,9 +28,6 @@ import android.widget.TextView;
 public class NfcFragment extends Fragment implements View.OnClickListener {
 
     Button sendFriendRequestButton;
-    private NfcAdapter nfcAdapter;
-    private TextView nfcStatusTextView;
-    private TextView nfcResponseView;
 
     public NfcFragment() {
         // Required empty public constructor
@@ -47,32 +50,15 @@ public class NfcFragment extends Fragment implements View.OnClickListener {
 
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_nfc, container, false);
-        sendFriendRequestButton = view.findViewById(R.id.sendFriendNFCButton);
-        nfcStatusTextView = view.findViewById(R.id.nfcStatusTextView);
-
-        //check if NFC feature available on phone
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this.getContext());
-        if(nfcAdapter == null)
-        {
-            sendFriendRequestButton.setEnabled(false);
-            nfcStatusTextView.setTextColor(Color.RED);
-            nfcStatusTextView.setText("NFC not available for this device!");
-        }
-        else
-        {
-            nfcStatusTextView.setTextColor(Color.RED);
-            nfcStatusTextView.setText("NFC not available for this device!");
-            sendFriendRequestButton.setOnClickListener(this);
-        }
-
-
 
         return view;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
     public void onClick(View v) {
         //TODO: add NFC handler for ANDROID BEAM
+
 
     }
 }
