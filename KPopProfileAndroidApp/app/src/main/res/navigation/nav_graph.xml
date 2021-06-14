@@ -9,9 +9,6 @@
         android:name="com.example.kpopprofileandroidapp.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_bandFragment"
-            app:destination="@id/bandFragment" />
         <argument
             android:name="username"
             app:argType="string"
@@ -26,4 +23,9 @@
         android:name="username"
         app:argType="string"
         android:defaultValue=""/>
+    <fragment
+        android:id="@+id/nfcFragment"
+        android:name="com.example.kpopprofileandroidapp.NfcFragment"
+        android:label="fragment_nfc"
+        tools:layout="@layout/fragment_nfc" />
 </navigation>

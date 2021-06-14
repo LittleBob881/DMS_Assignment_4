@@ -26,7 +26,7 @@ public class LoginActivity extends Activity {
 
     EditText usernameInput;
     Button nextButton;
-    private static String KPopProfileServiceLoginURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/userprofile/login";
+    private static String KPopProfileServiceLoginURL= "http://192.168.1.205:8080/KPopProfileService/kpopService/userprofile/login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

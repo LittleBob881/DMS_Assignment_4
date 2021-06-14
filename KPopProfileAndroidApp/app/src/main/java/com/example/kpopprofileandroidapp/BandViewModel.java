@@ -36,7 +36,7 @@ import okhttp3.ResponseBody;
     the data from this class's methods.
  */
 public class BandViewModel extends ViewModel {      //my laptop ip address - 192.168.1.205
-    private static String KPopProfileServiceBandResourceURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/bands/";
+    private static String KPopProfileServiceBandResourceURL= "http://192.168.1.205:8080/KPopProfileService/kpopService/bands/";
     private static String GETFavouriteBandsURLFragment = "favourite/";
     private static String POSTAddFavouriteBandUrlFragment = "addfavourite";
     private static String POSTRemoveFavouriteBandUrlFragment = "removefavourite";

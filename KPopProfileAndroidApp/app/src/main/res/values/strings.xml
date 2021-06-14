@@ -8,12 +8,7 @@
     <string name="previous">Previous</string>
     <string name="welcome_username">Welcome!</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-<!--    for recycler view-->
-<!--    <string-array name="kpop_bands"></string-array>'-->
-<!--    <item></item>-->
-<!--    <item></item>-->
-<!--    <item></item>-->
-<!--    <item></item>-->
-<!--    <item></item>-->
-<!--    <item></item>-->
+    <!--    for nfc fragment-->
+    <string name="send_Friend_Request_NFC">Send Friend Request via NFC </string>
+
 </resources>

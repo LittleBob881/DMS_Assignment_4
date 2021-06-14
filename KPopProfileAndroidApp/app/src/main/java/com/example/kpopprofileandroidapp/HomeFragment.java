@@ -28,9 +28,6 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "username";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -38,9 +35,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-        }
     }
 
     @Override
