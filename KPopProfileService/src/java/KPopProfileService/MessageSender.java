@@ -53,12 +53,11 @@ public class MessageSender {
         }
     }
 
-    public String sendForResponse(String JSONString) {
+    public String sendMessage(String JSONString) {
         String response = null;
         try {
             Destination tempDest = session.createTemporaryQueue();
             MessageConsumer responseConsumer = session.createConsumer(tempDest);
-//            responseConsumer.setMessageListener(new MessageReceiver());
             conn.start();
 
             TextMessage message = session.createTextMessage();

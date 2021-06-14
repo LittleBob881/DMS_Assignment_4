@@ -93,9 +93,6 @@ public class MessageBean {
                         boolean success = addFaveBand(json);
                         sendResponse(message, success);
                         break;
-                    case "getResponse":
-                        getResponse(message, json);
-                        break;
                     default:
                         System.out.println("Method did not match expected methods. ");
                 }
@@ -158,20 +155,6 @@ public class MessageBean {
         try {
             TextMessage response = this.session.createTextMessage();
             response.setText(String.valueOf(success));
-            response.setJMSCorrelationID(message.getJMSCorrelationID());
-            System.out.println("Sending back response");
-            messageProducer.send(message.getJMSReplyTo(), response);
-            System.out.println("Sending back response complete");
-
-        } catch (JMSException ex) {
-            System.out.println("Could not create reply message. " + ex);
-        }
-    }
-
-    public void getResponse(Message message, JsonObject JsonString) {
-        try {
-            TextMessage response = this.session.createTextMessage();
-            response.setText("Sending back a message to client");
             response.setJMSCorrelationID(message.getJMSCorrelationID());
             System.out.println("Sending back response");
             messageProducer.send(message.getJMSReplyTo(), response);

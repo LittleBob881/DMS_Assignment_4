@@ -80,7 +80,7 @@ public class BandBean {
         return bandList;
     }
 
-    public void addFavouriteBand(String bandName, String userName) {
+    public boolean addFavouriteBand(String bandName, String userName) {
         JsonObject faveBandJSON = Json.createObjectBuilder()
                 .add("method", "addFaveBand")
                 .add("userName", userName)
@@ -88,19 +88,9 @@ public class BandBean {
                 .build();
 
         System.out.println("Sending  messages");
-        messageSender.sendForResponse(faveBandJSON.toString());
+        String response = messageSender.sendMessage(faveBandJSON.toString());
         System.out.println("Sending completed");
-    }
-   
-    public void getResponse() {
-        JsonObject faveBandJSON = Json.createObjectBuilder()
-                .add("method", "getResponse")
-                .add("beep", "beep")
-                .add("bopp", "beep")
-                .build();
-
-        System.out.println("Sending  messages");
-        messageSender.sendForResponse(faveBandJSON.toString());
-        System.out.println("Sending completed");
+        
+        return Boolean.parseBoolean(response);
     }
 }
