@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -84,6 +85,18 @@ public class MessageBean {
 
     }
 
+        //populate username list from database
+    @PostConstruct
+    public void initialiseUsernameList()
+    {        
+        if(entityManager != null)
+        {
+            usernameList  = entityManager
+                    .createQuery("Select u from UserProfile u", UserProfile.class)
+                    .getResultList();
+        }     
+    }
+    
     public void onMessage(Message message) {
         try {
             if (message instanceof TextMessage) {
@@ -182,11 +195,6 @@ public class MessageBean {
         String username = loginJson.getString(1);
         boolean userExists = false;
 
-        if (entityManager != null && username != null) {
-            usernameList = entityManager
-                    .createQuery("Select u from UserProfile u", UserProfile.class)
-                    .getResultList();
-
             //check if username exists
             for (UserProfile user : usernameList) {
                 if (user.getUsername().equalsIgnoreCase(username)) {
@@ -216,9 +224,7 @@ public class MessageBean {
             }
 
             return true;
-        } else {
-            return false;
-        }
-    }
+        } 
+ }
 
-}
+
