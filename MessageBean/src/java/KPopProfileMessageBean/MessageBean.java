@@ -5,6 +5,8 @@
  */
 package KPopProfileMessageBean;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +26,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -86,15 +91,16 @@ public class MessageBean {
             if (message instanceof TextMessage) {
                 String messageString = ((TextMessage) message).getText();
                 System.out.println("Message Recieved: " + messageString);
-                JsonObject json = convertStringToJson(messageString);
+                JsonArray json = convertStringToJson(messageString);
 
-                switch (json.getString("method")) {
+                switch (json.getString(0)) {
                     case "addFaveBand":
                         boolean success = addFaveBand(json);
                         sendResponse(message, success);
                         break;
                     default:
                         System.out.println("Method did not match expected methods. ");
+                        sendResponse(message, false);
                 }
             } else {
                 System.out.println("MessageBean received non-text message: " + message);
@@ -105,31 +111,34 @@ public class MessageBean {
         }
     }
 
-    private JsonObject convertStringToJson(String jsonString) {
+    private JsonArray convertStringToJson(String jsonString) {
         StringTokenizer st = new StringTokenizer(jsonString, "\"{:,");
         st.nextToken();
-        String method = st.nextToken();
-        st.nextToken();
-        String userName = st.nextToken();
-        st.nextToken();
-        String bandName = st.nextToken();
 
-        JsonObject json = Json.createObjectBuilder()
-                .add("method", method)
-                .add("userName", userName)
-                .add("bandName", bandName)
-                .build();
+        int numVariables = Integer.parseInt(st.nextToken());
+        String[] keys = new String[numVariables];
+        String[] values = new String[numVariables];
+        for (int i = 0; i < numVariables; i++) {
+            keys[i] = st.nextToken();
+            values[i] = st.nextToken();
+        }
 
-        System.out.println("Convert Method. Method: " + method + ". User Name: "
-                + userName + ". Band Name: " + bandName);
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        for (int i = 0; i < numVariables; i++) {
+            builder.add(i, values[i]);
+        }
+
+        JsonArray json = builder.build();
+
+        System.out.println("Convert Method JSON String: " + json);
 
         return json;
     }
 
     //add favourite band of user to database and commit transaction
-    private boolean addFaveBand(JsonObject bandJson) {
-        String username = bandJson.getString("userName");
-        String bandName = bandJson.getString("bandName");
+    private boolean addFaveBand(JsonArray bandJson) {
+        String username = bandJson.getString(1);
+        String bandName = bandJson.getString(2);
 
         FavouriteBand newFav = new FavouriteBand();
         newFav.setBandName(bandName);

@@ -82,6 +82,7 @@ public class BandBean {
 
     public boolean addFavouriteBand(String bandName, String userName) {
         JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("numVariables", 3)
                 .add("method", "addFaveBand")
                 .add("userName", userName)
                 .add("bandName", bandName)
