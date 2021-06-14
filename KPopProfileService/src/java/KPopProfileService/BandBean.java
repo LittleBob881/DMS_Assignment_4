@@ -102,4 +102,19 @@ public class BandBean {
 
         return Boolean.parseBoolean(response);
     }
+    
+       public boolean removeFavouriteBand(String bandName, String userName) {
+        JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("numVariables", 3)
+                .add("method", "removeFaveBand")
+                .add("userName", userName)
+                .add("bandName", bandName)
+                .build();
+
+        System.out.println("Sending messages");
+        String response = messageSender.sendMessage(faveBandJSON.toString());
+        System.out.println("Sending completed");
+
+        return Boolean.parseBoolean(response);
+    }
 }

@@ -104,4 +104,20 @@ public class BandResource {
         boolean success = favouriteBean.addFavouriteBand(bandName, userName);
         return success;
     }
+    
+    @POST
+    @Path("removefavourite")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
+    public boolean removeFavouriteBand(MultivaluedMap<String, String> formParams)
+    {
+                String userName = formParams.getFirst("userName");
+        String bandName = formParams.getFirst("bandName");
+
+        System.out.println("Remove Fave: " + userName + " " + bandName);
+
+        boolean success = favouriteBean.removeFavouriteBand(bandName, userName);
+        return success;
+    }
+    
+
 }

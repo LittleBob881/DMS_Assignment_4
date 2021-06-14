@@ -36,6 +36,7 @@ import javax.json.JsonObjectBuilder;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.Query;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -112,6 +113,10 @@ public class MessageBean {
                 switch (json.getString(0)) {
                     case "addFaveBand":
                         success = addFaveBand(json);
+                        sendResponse(message, String.valueOf(success));
+                        break;
+                    case "removeFaveBand":
+                        success = removeFaveBand(json);
                         sendResponse(message, String.valueOf(success));
                         break;
                     case "login":
@@ -198,6 +203,30 @@ public class MessageBean {
         return true;
     }
 
+    private boolean removeFaveBand(JsonArray bandJson)
+    {
+        String username = bandJson.getString(1);
+        String bandName = bandJson.getString(2);
+        
+        if(entityManager != null)
+        {
+            try {
+                userTransaction.begin();
+                Query query = entityManager.createQuery("DELETE from FavouriteBand f WHERE "
+                        +"f.username = :username AND f.bandName = :bandName", FavouriteBand.class);
+                query.setParameter("username", username);
+                query.setParameter("bandName", bandName).executeUpdate();
+                
+                entityManager.flush();
+                userTransaction.commit();
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                Logger.getLogger(MessageBean.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        }
+        return true;
+    }
+    
     //add user to database if not already existing and commit transaction
     private boolean login(JsonArray loginJson) {
         String username = loginJson.getString(1);
