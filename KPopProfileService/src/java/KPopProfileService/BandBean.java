@@ -88,7 +88,7 @@ public class BandBean {
                 .build();
 
         System.out.println("Sending  messages");
-        messageSender.send(faveBandJSON.toString());
+        messageSender.sendForResponse(faveBandJSON.toString());
         System.out.println("Sending completed");
     }
    

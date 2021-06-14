@@ -69,10 +69,10 @@ public class MessageBean {
             connectionFactory = (ConnectionFactory) ctx.lookup("jms/ConnectionFactory");
             conn = connectionFactory.createConnection();
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            
+
             messageProducer = session.createProducer(null);
             messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            
+
         } catch (NamingException ex) {
             System.out.println("Could not create connection factory. " + ex);
         } catch (JMSException ex) {
@@ -90,7 +90,8 @@ public class MessageBean {
 
                 switch (json.getString("method")) {
                     case "addFaveBand":
-                        addFaveBand(json);
+                        boolean success = addFaveBand(json);
+                        sendResponse(message, success);
                         break;
                     case "getResponse":
                         getResponse(message, json);
@@ -98,12 +99,6 @@ public class MessageBean {
                     default:
                         System.out.println("Method did not match expected methods. ");
                 }
-
-
-                /*
-                Connect to database and look up the band and validate is a band in our db. 
-                Then add a new map between the user and the band
-                 */
             } else {
                 System.out.println("MessageBean received non-text message: " + message);
             }
@@ -159,6 +154,20 @@ public class MessageBean {
         return true;
     }
 
+    private void sendResponse(Message message, boolean success) {
+        try {
+            TextMessage response = this.session.createTextMessage();
+            response.setText(String.valueOf(success));
+            response.setJMSCorrelationID(message.getJMSCorrelationID());
+            System.out.println("Sending back response");
+            messageProducer.send(message.getJMSReplyTo(), response);
+            System.out.println("Sending back response complete");
+
+        } catch (JMSException ex) {
+            System.out.println("Could not create reply message. " + ex);
+        }
+    }
+
     public void getResponse(Message message, JsonObject JsonString) {
         try {
             TextMessage response = this.session.createTextMessage();
@@ -167,7 +176,7 @@ public class MessageBean {
             System.out.println("Sending back response");
             messageProducer.send(message.getJMSReplyTo(), response);
             System.out.println("Sending back response complete");
-            
+
         } catch (JMSException ex) {
             System.out.println("Could not create reply message. " + ex);
         }

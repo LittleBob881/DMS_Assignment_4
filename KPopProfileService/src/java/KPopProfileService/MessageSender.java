@@ -12,7 +12,6 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -23,7 +22,7 @@ import javax.naming.NamingException;
 
 /**
  *
- * 
+ *
  */
 public class MessageSender {
 
@@ -54,35 +53,47 @@ public class MessageSender {
         }
     }
 
-    public void send(String JSONString) {
-        try {
-            TextMessage message = session.createTextMessage();
-            message.setText(JSONString);
-            System.out.println("Sending JSON String: " + message);
-            producer.send(message);
-        } catch (JMSException e) {
-            System.err.println("Unable to send JSON String: " + e);
-        }
-    }
-
-    public void sendForResponse(String JSONString) {
+    public String sendForResponse(String JSONString) {
+        String response = null;
         try {
             Destination tempDest = session.createTemporaryQueue();
             MessageConsumer responseConsumer = session.createConsumer(tempDest);
-            responseConsumer.setMessageListener(new MessageReceiver());
+//            responseConsumer.setMessageListener(new MessageReceiver());
             conn.start();
 
             TextMessage message = session.createTextMessage();
             message.setText(JSONString);
             message.setJMSReplyTo(tempDest);
 
-            System.out.println("Setting reply destination to: " + tempDest.toString());
             UUID uuid = UUID.randomUUID();
             message.setJMSCorrelationID(uuid.toString());
 
             producer.send(message);
+
+            Message responseMessage = responseConsumer.receive();
+            response = responseMessage(responseMessage);
+            System.out.println("Response: " + response);
         } catch (JMSException ex) {
             System.out.println("Could not send message. " + ex);
         }
+        
+        return response;
+    }
+
+    private String responseMessage(Message responseMessage) {
+        String messageText = null;
+        System.out.println("Message recieved on consumer");
+        try {
+            if (responseMessage instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) responseMessage;
+                messageText = textMessage.getText();
+                System.out.println("Message on client. messageText = " + messageText);
+
+            }
+        } catch (JMSException e) {
+            System.out.println("Could not get response message. " + e);
+        }
+        
+        return messageText;
     }
 }

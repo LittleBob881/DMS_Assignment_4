@@ -129,9 +129,9 @@ public class BandResource {
         
         System.out.println("Add Fave: " + userName + " " + bandName);
         
-//        favouriteBean.addFavouriteBand(bandName, userName);
+        favouriteBean.addFavouriteBand(bandName, userName);
         
-        System.out.println("TESTING REPLY MESSAGES: ");
-        favouriteBean.getResponse();
+//        System.out.println("TESTING REPLY MESSAGES: ");
+//        favouriteBean.getResponse();
     }
 }
