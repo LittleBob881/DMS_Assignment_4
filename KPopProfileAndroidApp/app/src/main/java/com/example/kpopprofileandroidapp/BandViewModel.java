@@ -43,7 +43,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
 
 
     public List<Band> bandList = new ArrayList<>();
-    public List<String> favouriteBands = new ArrayList<>();
+    public List<String> favouriteBands;
 
     // this methods is called when activity or fragmeent is linked to an instance of this viewmodel class.
     public void initialiseAllBands()
@@ -80,6 +80,8 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
 
     public void getFavouriteBands(String username)
     {
+        favouriteBands = new ArrayList<>();
+
         BandTask bandTask = new BandTask();
         String parameters[] = new String[2];
         parameters[0] = "GET";

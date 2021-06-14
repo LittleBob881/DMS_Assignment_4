@@ -10,7 +10,7 @@
         android:id="@+id/username_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="284dp"
+        android:layout_marginTop="224dp"
         android:text="@string/EnterUsername"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,13 +28,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameTextField"
-        app:layout_constraintVertical_bias="0.234" />
+        app:layout_constraintVertical_bias="0.23" />
 
     <EditText
         android:id="@+id/usernameTextField"
         android:layout_width="217dp"
         android:layout_height="0dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="@string/Username"
         android:inputType="textPersonName"

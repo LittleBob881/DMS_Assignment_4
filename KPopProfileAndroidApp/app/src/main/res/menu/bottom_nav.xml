@@ -9,8 +9,4 @@
         android:id="@+id/bandFragment"
         android:title = "KPop Bands"
         android:icon="@drawable/ic_baseline_library_music_24"/>
-    <item
-        android:id="@+id/nfcFragment"
-        android:title = "Add Friends"
-        android:icon="@drawable/ic_baseline_people_24"/>
 </menu>

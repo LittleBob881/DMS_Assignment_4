@@ -26,4 +26,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/addFriendNFCButton"
+        android:layout_width="281dp"
+        android:layout_height="89dp"
+        android:background="#000000"
+        android:shadowColor="#F6F6F6"
+        android:text="@string/send_Friend_Request_NFC"
+        android:textColor="#000000"
+        android:textColorHighlight="#F4F4F4"
+        android:textSize="20sp"
+        app:backgroundTint="#C59C9C"
+        app:iconTint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeText"
+        app:layout_constraintVertical_bias="0.123"
+        app:rippleColor="#302D2D" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
