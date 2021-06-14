@@ -104,8 +104,6 @@ public class BandResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("addfavourite")
     public boolean addFavouriteBand(String favouriteJson) {
-        //TODO: extract username and bandname from JSON, add to favourites via EJB
-        
         StringTokenizer st = new StringTokenizer(favouriteJson, "\"");
         String bandName = st.nextToken();
         System.out.println("Band Name: " + bandName);

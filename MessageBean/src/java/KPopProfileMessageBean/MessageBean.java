@@ -5,8 +5,7 @@
  */
 package KPopProfileMessageBean;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +27,6 @@ import javax.transaction.UserTransaction;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -67,6 +64,7 @@ public class MessageBean {
     private Session session;
     private static ConnectionFactory connectionFactory;
     private MessageProducer messageProducer;
+    private List<UserProfile> usernameList;
 
     public MessageBean() {
         try {
@@ -93,9 +91,14 @@ public class MessageBean {
                 System.out.println("Message Recieved: " + messageString);
                 JsonArray json = convertStringToJson(messageString);
 
+                boolean success;
                 switch (json.getString(0)) {
                     case "addFaveBand":
-                        boolean success = addFaveBand(json);
+                        success = addFaveBand(json);
+                        sendResponse(message, success);
+                        break;
+                    case "login":
+                        success = login(json);
                         sendResponse(message, success);
                         break;
                     default:
@@ -135,6 +138,20 @@ public class MessageBean {
         return json;
     }
 
+    private void sendResponse(Message message, boolean success) {
+        try {
+            TextMessage response = this.session.createTextMessage();
+            response.setText(String.valueOf(success));
+            response.setJMSCorrelationID(message.getJMSCorrelationID());
+            System.out.println("Sending back response");
+            messageProducer.send(message.getJMSReplyTo(), response);
+            System.out.println("Sending back response complete");
+
+        } catch (JMSException ex) {
+            System.out.println("Could not create reply message. " + ex);
+        }
+    }
+
     //add favourite band of user to database and commit transaction
     private boolean addFaveBand(JsonArray bandJson) {
         String username = bandJson.getString(1);
@@ -160,17 +177,47 @@ public class MessageBean {
         return true;
     }
 
-    private void sendResponse(Message message, boolean success) {
-        try {
-            TextMessage response = this.session.createTextMessage();
-            response.setText(String.valueOf(success));
-            response.setJMSCorrelationID(message.getJMSCorrelationID());
-            System.out.println("Sending back response");
-            messageProducer.send(message.getJMSReplyTo(), response);
-            System.out.println("Sending back response complete");
+    //add user to database if not already existing and commit transaction
+    private boolean login(JsonArray loginJson) {
+        String username = loginJson.getString(1);
+        boolean userExists = false;
 
-        } catch (JMSException ex) {
-            System.out.println("Could not create reply message. " + ex);
+        if (entityManager != null && username != null) {
+            usernameList = entityManager
+                    .createQuery("Select u from UserProfile u", UserProfile.class)
+                    .getResultList();
+
+            //check if username exists
+            for (UserProfile user : usernameList) {
+                if (user.getUsername().equalsIgnoreCase(username)) {
+                    userExists = true;
+                    logger.info("User exists!");
+                }
+
+            }
+
+            //username does not exist, then create a record with the username
+            if (!userExists) {
+                //persist in UserProfile object
+                UserProfile newUser = new UserProfile();
+                newUser.setUsername(username);
+
+                //commit transaction to "kpop_users" database
+                try {
+                    userTransaction.begin();
+                    entityManager.persist(newUser);
+                    entityManager.flush();
+                    userTransaction.commit();
+                    usernameList.add(newUser);
+                } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                    System.out.println("Error in connecting to database");
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
+            return false;
         }
     }
 

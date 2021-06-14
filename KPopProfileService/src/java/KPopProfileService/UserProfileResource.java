@@ -47,9 +47,12 @@ public class UserProfileResource {
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void login(String userNameJSON) {
+    public boolean login(String userNameJSON) {
         StringTokenizer st = new StringTokenizer(userNameJSON, "\"");
         String userName = st.nextToken();
-        profileBean.login(userName);
+        
+        boolean success = profileBean.login(userName);
+        
+        return success;
     }
 }
