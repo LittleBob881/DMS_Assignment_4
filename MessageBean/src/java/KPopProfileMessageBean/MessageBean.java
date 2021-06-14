@@ -7,6 +7,7 @@ package KPopProfileMessageBean;
 
 import KPopProfileEntities.Band;
 import KPopProfileEntities.FavouriteBand;
+import KPopProfileEntities.Friend;
 import KPopProfileEntities.UserProfile;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -106,7 +107,7 @@ public class MessageBean {
         try {
             if (message instanceof TextMessage) {
                 String messageString = ((TextMessage) message).getText();
-                System.out.println("Message Recieved: " + messageString);
+                System.out.println("Message Received: " + messageString);
                 JsonArray json = convertStringToJson(messageString);
 
                 boolean success;
@@ -123,6 +124,9 @@ public class MessageBean {
                         success = login(json);
                         sendResponse(message, String.valueOf(success));
                         break;
+                    case "addFriend":
+                        success = addFriend(json);
+                        sendResponse(message, String.valueOf(success));
                     case "getAllBands":
                         String allBands = getAllBands();
                         sendResponse(message, allBands);
@@ -295,4 +299,41 @@ public class MessageBean {
         System.out.println("All Band List JSON: " + bandsJSON);
         return bandsJSON.toString();
     }
+    
+    private boolean addFriend(JsonArray friendJson)
+    {
+        String username1 = friendJson.getString(1);
+        String username2 = friendJson.getString(2);
+        
+        //compare user profile ids -> username1 > username2 in Friend entity
+        
+        Friend newFriends = new Friend();
+        
+        if(username1.compareToIgnoreCase(username2) < 0)
+        {
+            newFriends.setUsername1(username1);
+            newFriends.setUsername2(username2);
+        }
+        else
+        {
+            newFriends.setUsername1(username2);
+            newFriends.setUsername2(username1);
+        }
+        
+        
+          if (entityManager != null) {
+            try {
+                userTransaction.begin();
+                entityManager.persist(newFriends);
+                entityManager.flush();
+                userTransaction.commit();
+                logger.info("Transaction done! " + username1 + " -> " + username2);
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                Logger.getLogger(MessageBean.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+                }
+            }
+          return true;
+    }
 }
+

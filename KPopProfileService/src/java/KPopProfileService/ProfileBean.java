@@ -19,7 +19,7 @@ import javax.transaction.UserTransaction;
 
 /**
  *
- * This Stateful EJB Bean is used to create or update user details, such as
+ * This Singleton EJB Bean is used to create or update user details, such as
  * their username or kpop favourite
  */
 @Singleton
@@ -28,24 +28,6 @@ public class ProfileBean {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
     MessageSender messageSender = new MessageSender();
-
-    //for commits to database
-    @Resource
-    private UserTransaction userTransaction;
-
-    @PersistenceContext(unitName = "KPopProfileServicePU")
-    private EntityManager entityManager;
-    private List<UserProfile> usernameList;
-
-    //populate username list from database
-    @PostConstruct
-    public void initialiseUsernameList() {
-        if (entityManager != null) {
-            usernameList = entityManager
-                    .createQuery("Select u from UserProfile u", UserProfile.class)
-                    .getResultList();
-        }
-    }
 
     public boolean login(String username) {
         JsonObject loginJSON = Json.createObjectBuilder()

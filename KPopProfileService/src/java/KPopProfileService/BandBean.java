@@ -31,9 +31,9 @@ public class BandBean {
     private Logger logger = Logger.getLogger(this.getClass().getName());
     MessageSender messageSender = new MessageSender();
 
-    //for commits to database
+    //for commits to database    private UserTransaction userTransaction;
+
     @Resource
-    private UserTransaction userTransaction;
     @PersistenceContext(unitName = "KPopProfileServicePU")
     private EntityManager entityManager;
     private List<Band> bandList;

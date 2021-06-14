@@ -23,6 +23,7 @@ public class ApplicationConfig extends Application {
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(KPopProfileService.BandResource.class);
+        resources.add(KPopProfileService.FriendResource.class);
         resources.add(KPopProfileService.UserProfileResource.class);
     }
 }

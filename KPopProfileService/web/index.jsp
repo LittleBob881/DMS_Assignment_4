@@ -44,5 +44,17 @@
             </p>
             <input type="submit" value="GO"/>
         </form>
+         </a>
+         <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/friends/addfriend" method="POST">
+            <p>
+                Username1:
+                <input type="text" name="username1"/>
+            </p>
+            <p>
+                Username 2:
+                <input type="text" name="username2"/>
+            </p>
+            <input type="submit" value="GO"/>
+        </form>
     </body>
 </html>
