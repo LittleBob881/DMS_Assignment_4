@@ -12,9 +12,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
+import javax.jms.Message;
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -89,6 +89,18 @@ public class BandBean {
 
         System.out.println("Sending  messages");
         messageSender.send(faveBandJSON.toString());
+        System.out.println("Sending completed");
+    }
+   
+    public void getResponse() {
+        JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("method", "getResponse")
+                .add("beep", "beep")
+                .add("bopp", "beep")
+                .build();
+
+        System.out.println("Sending  messages");
+        messageSender.sendForResponse(faveBandJSON.toString());
         System.out.println("Sending completed");
     }
 }

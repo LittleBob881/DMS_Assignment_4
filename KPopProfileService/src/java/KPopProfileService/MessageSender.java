@@ -5,11 +5,16 @@
  */
 package KPopProfileService;
 
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -22,7 +27,7 @@ import javax.naming.NamingException;
  *
  *
  */
-public class MessageSender {
+public class MessageSender implements MessageListener {
 
     private Connection conn;
     private Session session;
@@ -36,7 +41,7 @@ public class MessageSender {
             connectionFactory = (ConnectionFactory) ctx.lookup("jms/ConnectionFactory");
             queue = (Queue) ctx.lookup("jms/KPopProfileQueue");
         } catch (NamingException ex) {
-            Logger.getLogger(MessageSender.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Could not create connection factory");
         }
 
         try {
@@ -51,10 +56,10 @@ public class MessageSender {
         }
     }
 
-    public void send(String JSONFaveBand) {
+    public void send(String JSONString) {
         try {
             TextMessage message = session.createTextMessage();
-            message.setText(JSONFaveBand);
+            message.setText(JSONString);
             System.out.println("Sending JSON String: " + message);
             producer.send(message);
         } catch (JMSException e) {
@@ -62,16 +67,36 @@ public class MessageSender {
         }
     }
 
-    public void closeConnection() {
+    public void sendForResponse(String JSONString) {
         try {
-            if (session != null) {
-                session.close();
-            }
-            if (conn != null) {
-                conn.close();
+            Destination tempDest = session.createTemporaryQueue();
+            MessageConsumer responseConsumer = session.createConsumer(tempDest);
+            responseConsumer.setMessageListener(this);
+
+            TextMessage message = session.createTextMessage();
+            message.setText(JSONString);
+            message.setJMSReplyTo(tempDest);
+
+            UUID uuid = UUID.randomUUID();
+            message.setJMSCorrelationID(uuid.toString());
+
+            producer.send(message);
+        } catch (JMSException ex) {
+            System.out.println("Could not send message. " + ex);
+        }
+    }
+
+    @Override
+    public void onMessage(Message message) {
+        String messageText = null;
+        try {
+            if (message instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) message;
+                messageText = textMessage.getText();
+                System.out.println("Message on client. messageText = " + messageText);
             }
         } catch (JMSException e) {
-            System.err.println("Unable to close connection: " + e);
+            System.out.println("Could not get response message. " + e);
         }
     }
 

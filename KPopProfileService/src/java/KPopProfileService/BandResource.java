@@ -5,7 +5,6 @@
  */
 package KPopProfileService;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -15,7 +14,6 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -131,6 +129,9 @@ public class BandResource {
         
         System.out.println("Add Fave: " + userName + " " + bandName);
         
-        favouriteBean.addFavouriteBand(bandName, userName);
+//        favouriteBean.addFavouriteBand(bandName, userName);
+        
+        System.out.println("TESTING REPLY MESSAGES: ");
+        favouriteBean.getResponse();
     }
 }
