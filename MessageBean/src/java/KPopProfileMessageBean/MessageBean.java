@@ -162,9 +162,11 @@ public class MessageBean {
     public void getResponse(Message message, JsonObject JsonString) {
         try {
             TextMessage response = this.session.createTextMessage();
-            response.setText("Sending back a message >.<");
+            response.setText("Sending back a message to client");
             response.setJMSCorrelationID(message.getJMSCorrelationID());
+            System.out.println("Sending back response");
             messageProducer.send(message.getJMSReplyTo(), response);
+            System.out.println("Sending back response complete");
             
         } catch (JMSException ex) {
             System.out.println("Could not create reply message. " + ex);

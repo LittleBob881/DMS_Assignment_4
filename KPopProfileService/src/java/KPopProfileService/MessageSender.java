@@ -6,8 +6,6 @@
 package KPopProfileService;
 
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -25,9 +23,9 @@ import javax.naming.NamingException;
 
 /**
  *
- *
+ * 
  */
-public class MessageSender implements MessageListener {
+public class MessageSender {
 
     private Connection conn;
     private Session session;
@@ -41,7 +39,7 @@ public class MessageSender implements MessageListener {
             connectionFactory = (ConnectionFactory) ctx.lookup("jms/ConnectionFactory");
             queue = (Queue) ctx.lookup("jms/KPopProfileQueue");
         } catch (NamingException ex) {
-            System.out.println("Could not create connection factory");
+            System.out.println("Could not create connection factory. Try removing the glassfish/domains/domain1/imq/instances/imqbroker/lock file and restarting the server. " + ex);
         }
 
         try {
@@ -71,12 +69,14 @@ public class MessageSender implements MessageListener {
         try {
             Destination tempDest = session.createTemporaryQueue();
             MessageConsumer responseConsumer = session.createConsumer(tempDest);
-            responseConsumer.setMessageListener(this);
+            responseConsumer.setMessageListener(new MessageReceiver());
+            conn.start();
 
             TextMessage message = session.createTextMessage();
             message.setText(JSONString);
             message.setJMSReplyTo(tempDest);
 
+            System.out.println("Setting reply destination to: " + tempDest.toString());
             UUID uuid = UUID.randomUUID();
             message.setJMSCorrelationID(uuid.toString());
 
@@ -85,19 +85,4 @@ public class MessageSender implements MessageListener {
             System.out.println("Could not send message. " + ex);
         }
     }
-
-    @Override
-    public void onMessage(Message message) {
-        String messageText = null;
-        try {
-            if (message instanceof TextMessage) {
-                TextMessage textMessage = (TextMessage) message;
-                messageText = textMessage.getText();
-                System.out.println("Message on client. messageText = " + messageText);
-            }
-        } catch (JMSException e) {
-            System.out.println("Could not get response message. " + e);
-        }
-    }
-
 }
