@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
-import javax.jms.Message;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.persistence.EntityManager;

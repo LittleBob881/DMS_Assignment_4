@@ -5,9 +5,9 @@
  */
 package KPopProfileMessageBean;
 
-import java.util.List;
+import KPopProfileServices.AddFaveBandService;
+import KPopProfileServices.LoginService;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
@@ -30,11 +30,6 @@ import javax.json.JsonArrayBuilder;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 
 /**
  *
@@ -64,7 +59,6 @@ public class MessageBean {
     private Session session;
     private static ConnectionFactory connectionFactory;
     private MessageProducer messageProducer;
-    private List<UserProfile> usernameList;
 
     public MessageBean() {
         try {
@@ -91,16 +85,14 @@ public class MessageBean {
                 System.out.println("Message Recieved: " + messageString);
                 JsonArray json = convertStringToJson(messageString);
 
-                boolean success;
                 switch (json.getString(0)) {
                     case "addFaveBand":
-                        success = addFaveBand(json);
-                        sendResponse(message, success);
+                        addFaveBand(json, message);
                         break;
                     case "login":
-                        success = login(json);
-                        sendResponse(message, success);
+                        login(json, message);
                         break;
+                    
                     default:
                         System.out.println("Method did not match expected methods. ");
                         sendResponse(message, false);
@@ -152,73 +144,60 @@ public class MessageBean {
         }
     }
 
-    //add favourite band of user to database and commit transaction
-    private boolean addFaveBand(JsonArray bandJson) {
-        String username = bandJson.getString(1);
-        String bandName = bandJson.getString(2);
-
-        FavouriteBand newFav = new FavouriteBand();
-        newFav.setBandName(bandName);
-        newFav.setUsername(username);
-
-        if (entityManager != null) {
-            try {
-                userTransaction.begin();
-                entityManager.persist(newFav);
-                entityManager.flush();
-                userTransaction.commit();
-                logger.info("Transaction done! " + username + " -> " + bandName);
-            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                Logger.getLogger(MessageBean.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            }
-        }
-
-        return true;
+    private void addFaveBand(JsonArray bandJson, Message message) {
+        AddFaveBandService addFaveBandService = new AddFaveBandService();
+        boolean success = addFaveBandService.addFaveBand(bandJson);
+        sendResponse(message, success);
+    }
+    
+    private void login(JsonArray loginJson, Message message) {
+        LoginService loginService = new LoginService();
+        boolean success = loginService.login(loginJson);
+        sendResponse(message, success);
     }
 
-    //add user to database if not already existing and commit transaction
-    private boolean login(JsonArray loginJson) {
-        String username = loginJson.getString(1);
-        boolean userExists = false;
-
-        if (entityManager != null && username != null) {
-            usernameList = entityManager
-                    .createQuery("Select u from UserProfile u", UserProfile.class)
-                    .getResultList();
-
-            //check if username exists
-            for (UserProfile user : usernameList) {
-                if (user.getUsername().equalsIgnoreCase(username)) {
-                    userExists = true;
-                    logger.info("User exists!");
-                }
-
-            }
-
-            //username does not exist, then create a record with the username
-            if (!userExists) {
-                //persist in UserProfile object
-                UserProfile newUser = new UserProfile();
-                newUser.setUsername(username);
-
-                //commit transaction to "kpop_users" database
-                try {
-                    userTransaction.begin();
-                    entityManager.persist(newUser);
-                    entityManager.flush();
-                    userTransaction.commit();
-                    usernameList.add(newUser);
-                } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                    System.out.println("Error in connecting to database");
-                    return false;
-                }
-            }
-
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    //add user to database if not already existing and commit transaction
+//    private boolean login(JsonArray loginJson) {
+//        String username = loginJson.getString(1);
+//        boolean userExists = false;
+//
+//        if (entityManager != null && username != null) {
+//            usernameList = entityManager
+//                    .createQuery("Select u from UserProfile u", UserProfile.class)
+//                    .getResultList();
+//
+//            //check if username exists
+//            for (UserProfile user : usernameList) {
+//                if (user.getUsername().equalsIgnoreCase(username)) {
+//                    userExists = true;
+//                    logger.info("User exists!");
+//                }
+//
+//            }
+//
+//            //username does not exist, then create a record with the username
+//            if (!userExists) {
+//                //persist in UserProfile object
+//                UserProfile newUser = new UserProfile();
+//                newUser.setUsername(username);
+//
+//                //commit transaction to "kpop_users" database
+//                try {
+//                    userTransaction.begin();
+//                    entityManager.persist(newUser);
+//                    entityManager.flush();
+//                    userTransaction.commit();
+//                    usernameList.add(newUser);
+//                } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+//                    System.out.println("Error in connecting to database");
+//                    return false;
+//                }
+//            }
+//
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
 }
