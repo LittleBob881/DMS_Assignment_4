@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
-import javax.jms.Message;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.persistence.EntityManager;
@@ -75,9 +74,18 @@ public class BandBean {
         }
         return favouriteBandDetails;
     }
+    
+    public String getAllBandsJSON() {
+        JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("numVariables", 1)
+                .add("method", "getAllBands")
+                .build();
 
-    public List getAllBands() {
-        return bandList;
+        System.out.println("Sending  messages");
+        String response = messageSender.sendMessage(faveBandJSON.toString());
+        System.out.println("Sending completed");
+        
+        return response;
     }
 
     public boolean addFavouriteBand(String bandName, String userName) {

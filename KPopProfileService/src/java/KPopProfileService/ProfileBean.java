@@ -6,22 +6,15 @@
 package KPopProfileService;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -56,14 +49,14 @@ public class ProfileBean {
     }
     
     public boolean login(String username) {
-        JsonObject faveBandJSON = Json.createObjectBuilder()
+        JsonObject loginJSON = Json.createObjectBuilder()
                 .add("numVariables", 2)
                 .add("method", "login")
                 .add("userName", username)
                 .build();
 
         System.out.println("Sending  messages");
-        String response = messageSender.sendMessage(faveBandJSON.toString());
+        String response = messageSender.sendMessage(loginJSON.toString());
         System.out.println("Sending completed");
         
         return Boolean.parseBoolean(response);

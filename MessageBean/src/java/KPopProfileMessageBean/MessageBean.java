@@ -5,6 +5,9 @@
  */
 package KPopProfileMessageBean;
 
+import KPopProfileEntities.Band;
+import KPopProfileEntities.FavouriteBand;
+import KPopProfileEntities.UserProfile;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -28,6 +31,8 @@ import javax.transaction.UserTransaction;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -39,7 +44,8 @@ import javax.transaction.SystemException;
 
 /**
  *
- * Description.
+ * Receives messages on queue from KPopProfileService. Sends back a response
+ * message.
  */
 @MessageDriven(activationConfig
         = {
@@ -85,18 +91,16 @@ public class MessageBean {
 
     }
 
-        //populate username list from database
+    //populate username list from database
     @PostConstruct
-    public void initialiseUsernameList()
-    {        
-        if(entityManager != null)
-        {
-            usernameList  = entityManager
+    public void initialiseUsernameList() {
+        if (entityManager != null) {
+            usernameList = entityManager
                     .createQuery("Select u from UserProfile u", UserProfile.class)
                     .getResultList();
-        }     
+        }
     }
-    
+
     public void onMessage(Message message) {
         try {
             if (message instanceof TextMessage) {
@@ -108,15 +112,19 @@ public class MessageBean {
                 switch (json.getString(0)) {
                     case "addFaveBand":
                         success = addFaveBand(json);
-                        sendResponse(message, success);
+                        sendResponse(message, String.valueOf(success));
                         break;
                     case "login":
                         success = login(json);
-                        sendResponse(message, success);
+                        sendResponse(message, String.valueOf(success));
+                        break;
+                    case "getAllBands":
+                        String allBands = getAllBands();
+                        sendResponse(message, allBands);
                         break;
                     default:
                         System.out.println("Method did not match expected methods. ");
-                        sendResponse(message, false);
+                        sendResponse(message, "false");
                 }
             } else {
                 System.out.println("MessageBean received non-text message: " + message);
@@ -151,10 +159,10 @@ public class MessageBean {
         return json;
     }
 
-    private void sendResponse(Message message, boolean success) {
+    private void sendResponse(Message message, String success) {
         try {
             TextMessage response = this.session.createTextMessage();
-            response.setText(String.valueOf(success));
+            response.setText(success);
             response.setJMSCorrelationID(message.getJMSCorrelationID());
             System.out.println("Sending back response");
             messageProducer.send(message.getJMSReplyTo(), response);
@@ -195,36 +203,67 @@ public class MessageBean {
         String username = loginJson.getString(1);
         boolean userExists = false;
 
-            //check if username exists
-            for (UserProfile user : usernameList) {
-                if (user.getUsername().equalsIgnoreCase(username)) {
-                    userExists = true;
-                    logger.info("User exists!");
-                }
-
+        //check if username exists
+        for (UserProfile user : usernameList) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                userExists = true;
+                logger.info("User exists!");
             }
 
-            //username does not exist, then create a record with the username
-            if (!userExists) {
-                //persist in UserProfile object
-                UserProfile newUser = new UserProfile();
-                newUser.setUsername(username);
+        }
 
-                //commit transaction to "kpop_users" database
-                try {
-                    userTransaction.begin();
-                    entityManager.persist(newUser);
-                    entityManager.flush();
-                    userTransaction.commit();
-                    usernameList.add(newUser);
-                } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                    System.out.println("Error in connecting to database");
-                    return false;
-                }
+        //username does not exist, then create a record with the username
+        if (!userExists) {
+            //persist in UserProfile object
+            UserProfile newUser = new UserProfile();
+            newUser.setUsername(username);
+
+            //commit transaction to "kpop_users" database
+            try {
+                userTransaction.begin();
+                entityManager.persist(newUser);
+                entityManager.flush();
+                userTransaction.commit();
+                usernameList.add(newUser);
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                System.out.println("Error in connecting to database");
+                return false;
             }
+        }
 
-            return true;
-        } 
- }
+        return true;
+    }
+    
+    private String getAllBands() {
+        List<Band> allBandsList = null;
+        
+        if (entityManager != null) {
+            allBandsList = entityManager
+                    .createQuery("Select b from Band b", Band.class)
+                    .getResultList();
+        }
 
-
+        //parse into json
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        
+        //add each band object into a JSON array
+        for(Band band : allBandsList)
+        {
+            builder.add("name", band.getName());
+            builder.add("generation", band.getGeneration());
+            builder.add("year", band.getYear());
+            builder.add("fandomName", band.getFandomName());
+          
+            arrayBuilder.add(builder.build());
+        }
+        
+        //build json array as object
+        builder.add("bands", arrayBuilder.build());
+        
+        //return whole JsonObject
+        JsonObject bandsJSON = builder.build();
+        System.out.println("All Band List JSON: " + bandsJSON);
+        return bandsJSON.toString();
+    }
+}

@@ -13,6 +13,9 @@
     </head>
     <body>
         <h1>Hello World!</h1>
+        <a href="/KPopProfileService/kpopService/bands">
+         Get All Bands
+         </a>
         <form action="<%= response.encodeURL(request.getContextPath())%>/kpopService/userprofile/login" method="POST">
             <p>
                 User Name:

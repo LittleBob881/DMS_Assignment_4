@@ -41,30 +41,8 @@ public class BandResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllBands()
     {
-        List<Band> allBandsList = favouriteBean.getAllBands();
-
-        //parse into json
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        
-        //add each band object into a JSON array
-        for(Band band : allBandsList)
-        {
-            builder.add("name", band.getName());
-            builder.add("generation", band.getGeneration());
-            builder.add("year", band.getYear());
-            builder.add("fandomName", band.getFandomName());
-          
-            arrayBuilder.add(builder.build());
-        }
-        
-        //build json array as object
-        builder.add("bands", arrayBuilder.build());
-        
-        //return whole JsonObject
-        JsonObject bandsJSON = builder.build();
-        
-        return bandsJSON.toString();
+        String allBands = favouriteBean.getAllBandsJSON();
+        return allBands;
     }
     
     @GET
