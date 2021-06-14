@@ -14,39 +14,35 @@ import javax.persistence.Table;
 
 /**
  *
- * @author Bernie
+ * User Profile Entity, columns for ID and user name.
  */
 @Entity
 @Table(name = "jbr9093_kpop_useres")
 public class UserProfile {
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
     @Column
     private String username;
-    
-    public UserProfile()
-    {
+
+    public UserProfile() {
     }
-    
-    public Long getId()
-    {
+
+    public Long getId() {
         return id;
     }
-    
-    public String getUsername()
-    {
+
+    public String getUsername() {
         return username;
     }
-    
-    
-    public void setId(Long Id)
-    {
+
+    public void setId(Long Id) {
         this.id = id;
     }
-    
-    public void setUsername(String username)
-    {
+
+    public void setUsername(String username) {
         this.username = username;
     }
 }

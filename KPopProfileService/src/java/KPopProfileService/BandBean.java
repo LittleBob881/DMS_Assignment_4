@@ -74,7 +74,7 @@ public class BandBean {
         }
         return favouriteBandDetails;
     }
-    
+
     public String getAllBandsJSON() {
         JsonObject faveBandJSON = Json.createObjectBuilder()
                 .add("numVariables", 1)
@@ -84,7 +84,7 @@ public class BandBean {
         System.out.println("Sending  messages");
         String response = messageSender.sendMessage(faveBandJSON.toString());
         System.out.println("Sending completed");
-        
+
         return response;
     }
 
@@ -99,7 +99,7 @@ public class BandBean {
         System.out.println("Sending  messages");
         String response = messageSender.sendMessage(faveBandJSON.toString());
         System.out.println("Sending completed");
-        
+
         return Boolean.parseBoolean(response);
     }
 }

@@ -25,59 +25,57 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  *
- * Description. 
+ * Resource for getting information on the KPop bands. Methods for getting all
+ * bands, getting a users favourite bands, and adding a new favourite band for a
+ * user.
  */
-@Named 
+@Named
 @Path("/bands")
 public class BandResource {
-    
+
     @EJB
     private BandBean favouriteBean;
-    
-    public BandResource()
-    {}
-    
+
+    public BandResource() {
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllBands()
-    {
+    public String getAllBands() {
         String allBands = favouriteBean.getAllBandsJSON();
         return allBands;
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("favourite/{username}")
     public String getFavourites(@PathParam("username") String userName) {
         List<Band> favouriteBandsList = favouriteBean.getFavouriteBands(userName);
-        
+
         //parse into json
         JsonObjectBuilder builder = Json.createObjectBuilder();
         ArrayList<JsonObject> bandObjects = new ArrayList<>();
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        
-        
+
         //add each band object into a JSON array
-        for(Band band : favouriteBandsList)
-        {
+        for (Band band : favouriteBandsList) {
             builder.add("name", band.getName());
             builder.add("generation", band.getGeneration());
             builder.add("year", band.getYear());
             builder.add("fandomName", band.getFandomName());
-          
+
             arrayBuilder.add(builder.build());
         }
-        
+
         //build json array as object
         builder.add("bands", arrayBuilder.build());
-        
+
         //return whole JsonObject
         JsonObject favouriteBandsJSON = builder.build();
-        
+
         return favouriteBandsJSON.toString();
     }
-    
-    
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("addfavourite")
@@ -88,21 +86,21 @@ public class BandResource {
         st.nextToken();
         String userName = st.nextToken();
         System.out.println("User Name: " + userName);
-        
+
         boolean success = favouriteBean.addFavouriteBand(bandName, userName);
         return success;
     }
-    
+
     @POST
     @Path("addfavourite")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
     public boolean addFavouriteBand(MultivaluedMap<String, String> formParams) {
-        
+
         String userName = formParams.getFirst("userName");
         String bandName = formParams.getFirst("bandName");
-        
+
         System.out.println("Add Fave: " + userName + " " + bandName);
-        
+
         boolean success = favouriteBean.addFavouriteBand(bandName, userName);
         return success;
     }

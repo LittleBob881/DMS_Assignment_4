@@ -20,39 +20,41 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  *
- * Description. 
+ * Resource for logging into the server. Keeps track of the users name in the
+ * database.
  */
 @Named  //for dependency injection EJB
 @Path("/userprofile")
 public class UserProfileResource {
+
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    @EJB 
+    @EJB
     private ProfileBean profileBean;
-    
-    public UserProfileResource()
-    {}
-      
+
+    public UserProfileResource() {
+    }
+
     @POST
     @Path("/login")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
     public boolean login(MultivaluedMap<String, String> formParams) {
-        
+
         String username = formParams.getFirst("username");
         boolean success = profileBean.login(username);
 
         return success;
     }
-    
+
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     public boolean login(String userNameJSON) {
         StringTokenizer st = new StringTokenizer(userNameJSON, "\"");
         String userName = st.nextToken();
-        
+
         boolean success = profileBean.login(userName);
-        
+
         return success;
     }
 }

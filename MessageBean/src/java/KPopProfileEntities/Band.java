@@ -11,12 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/** This class contains band get and set information. 
- *  Class is used to work with our Database table called KPop_Bands
+/**
+ * This class contains band get and set information. Class is used to work with
+ * our Database table called KPop_Bands
  */
 @Entity
 @Table(name = "KPop_Bands")
 public class Band implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Column(name = "name")
@@ -58,9 +60,9 @@ public class Band implements Serializable {
     public String getFandomName() {
         return fandomName;
     }
-    
+
     public void setFandomName(String fandomName) {
         this.fandomName = fandomName;
     }
-    
+
 }

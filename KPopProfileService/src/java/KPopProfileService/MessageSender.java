@@ -22,7 +22,10 @@ import javax.naming.NamingException;
 
 /**
  *
- *
+ * This class sends messages from the RESTful service to a message bean which
+ * access the database and sends back a response message. The send message
+ * method will wait for the response message before continuing as the response
+ * it needed for the HTTP requests made.
  */
 public class MessageSender {
 
@@ -38,7 +41,8 @@ public class MessageSender {
             connectionFactory = (ConnectionFactory) ctx.lookup("jms/ConnectionFactory");
             queue = (Queue) ctx.lookup("jms/KPopProfileQueue");
         } catch (NamingException ex) {
-            System.out.println("Could not create connection factory. Try removing the glassfish/domains/domain1/imq/instances/imqbroker/lock file and restarting the server. " + ex);
+            System.out.println("Could not create connection factory. Try removing "
+                    + "the glassfish/domains/domain1/imq/instances/imqbroker/lock file and restarting the server. " + ex);
         }
 
         try {
@@ -75,7 +79,7 @@ public class MessageSender {
         } catch (JMSException ex) {
             System.out.println("Could not send message. " + ex);
         }
-        
+
         return response;
     }
 
@@ -92,7 +96,7 @@ public class MessageSender {
         } catch (JMSException e) {
             System.out.println("Could not get response message. " + e);
         }
-        
+
         return messageText;
     }
 }
