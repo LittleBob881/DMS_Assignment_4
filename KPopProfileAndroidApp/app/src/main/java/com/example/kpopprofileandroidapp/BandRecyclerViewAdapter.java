@@ -80,7 +80,7 @@ public class BandRecyclerViewAdapter extends RecyclerView.Adapter<BandRecyclerVi
         //set listener for imagebutton with heart icon, to favourite/unfavourite bands.
         holder.favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { //TODO: MAKE POST REQUEST TO ADD/REMOVE FAVOURITE BAND?
+            public void onClick(View v) { //MAKE POST REQUEST TO ADD/REMOVE FAVOURITE BAND?
                 if(holder.isFavourite)
                 {
                     holder.isFavourite = false;

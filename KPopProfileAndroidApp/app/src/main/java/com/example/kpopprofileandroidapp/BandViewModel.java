@@ -184,7 +184,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
             {
                 //add username and band name as a form parameters for  server to retrieve
                 RequestBody body = new FormBody.Builder()
-                        .addEncoded("username", strings[2])
+                        .addEncoded("userName", strings[2])
                         .addEncoded("bandName", strings[3])
                         .build();
 

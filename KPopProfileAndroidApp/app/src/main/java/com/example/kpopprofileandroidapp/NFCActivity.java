@@ -11,17 +11,23 @@ import android.nfc.NfcEvent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -33,8 +39,7 @@ import java.util.List;
 public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback{
     private String username;
     private NfcAdapter nfcAdapter;
-    private TextView nfcStatusTextView;
-    private TextView nfcResponseView;
+    private TextView nfcStatusTextView, nfcResponseView,  senderTextView, outputTextView;
     private PendingIntent pendingIntent;
     private BandViewModel viewModel;
     @Override
@@ -47,7 +52,6 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
         viewModel = ViewModelProviders.of(this).get(BandViewModel.class);
         viewModel.initialiseAllBands();
 
-
         //check if NFC feature available on phone
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcStatusTextView = findViewById(R.id.nfcStatusTextView);
@@ -59,6 +63,7 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
         }
         else if(nfcAdapter != null)
         {
+            outputTextView = findViewById(R.id.outputContentText);
             nfcStatusTextView.setTextColor(Color.GREEN);
             nfcStatusTextView.setText("NFC available for this device!");
         }
@@ -98,7 +103,7 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
                         NdefRecord.createApplicationRecord(builder.toString()),
                 });
 
-        System.out.println("!!!!!!!!!!!!!!!!!! NDEF MESSAGE CREATED");
+        System.out.println("NDEF MESSAGE CREATED");
         return message;
     }
 
@@ -125,13 +130,14 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
         String str = new String(records[1].getPayload());
 
         String[] bands = str.split("-");
-
+        List<String> senderFaveBands = new ArrayList<>();
         for(int i = 0; i < bands.length; i++)
         {
-            System.out.println("BAND I LIKE -> "+i+". "+bands[i]);
+            System.out.println("SENDER'S BANDS -> "+i+". "+bands[i]);
+            senderFaveBands.add(bands[i]);
         }
-        System.out.println("~~~~~~~~~~~~~ DISPLAY RESUME!!!");
-        showFriendRequestPopup(new String(records[0].getPayload()));
+
+        showFriendRequestPopup(new String(records[0].getPayload()), senderFaveBands);
     }
 
     static String displayByteArray(byte[] bytes) {
@@ -144,16 +150,58 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
     }
 
     //show popup for friend request component
-    public void showFriendRequestPopup(String sender)
+    public void showFriendRequestPopup(String sender, List<String> senderBands)
     {
-        String friendRequestMessage = "New Friend request from: "+
-        TextView senderText = findViewById(R.id.friendRequestTextView);
-        senderText.setText(sender);
+        //create view model to add friends
+        FriendViewModel friendModel = new FriendViewModel();
 
+        //show friend request popup
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         View friendPopup = getLayoutInflater().inflate(R.layout.friend_popup, null);
-
         dialogBuilder.setView(friendPopup);
+
+        //add to output text
+        outputTextView.append("\nFriend Request received from "+sender);
+
+        //get favourite bands for user incase it wasnt called initially, used to compare with sender's bands
+        viewModel.getFavouriteBands(username);
+
+        String friendRequestMessage = "New Friend request from: ";
+        Spannable senderUsername = new SpannableString(sender+"\n");
+        senderUsername.setSpan(new ForegroundColorSpan(Color.BLUE), 0, senderUsername.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        StringBuilder bandsInCommon = new StringBuilder();
+        StringBuilder otherBands = new StringBuilder();
+        otherBands.append("\n\n"+sender+"'s Other Favourite Bands:\n")
+        for(String bandName : senderBands)
+        {
+            if(viewModel.favouriteBands.contains(bandName))
+            {
+                bandsInCommon.append("\nYou both like "+bandName+"!");
+            }
+            else
+                otherBands.append("\n"+bandName);
+        }
+
+        //add listener for "Accept friend request" button
+        Button acceptButton = findViewById(R.id.addFriendNFCButton);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        Spannable commonBands = new SpannableString(bandsInCommon.toString());
+        commonBands.setSpan(new ForegroundColorSpan(Color.GREEN), 0, commonBands.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        senderTextView =  friendPopup.findViewById(R.id.friendRequestTextView);
+        senderTextView.setText(friendRequestMessage);
+        senderTextView.append(senderUsername);
+        senderTextView.append(commonBands);
+        senderTextView.append(otherBands);
+
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
     }

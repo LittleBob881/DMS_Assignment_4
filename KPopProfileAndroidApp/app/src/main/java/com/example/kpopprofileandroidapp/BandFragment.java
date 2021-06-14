@@ -61,7 +61,6 @@ public class BandFragment extends Fragment {
         //assign recycler view to show band list
         bandRecyclerView = view.findViewById(R.id.bandRecyclerView);
 
-
         //dynamic adapter
         BandRecyclerViewAdapter adapter = new BandRecyclerViewAdapter(this.getContext(), activity.username, viewModel);
         bandRecyclerView.setAdapter(adapter);
