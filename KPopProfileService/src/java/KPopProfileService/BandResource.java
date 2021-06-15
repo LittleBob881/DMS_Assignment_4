@@ -7,7 +7,6 @@ package KPopProfileService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.json.Json;
@@ -77,7 +76,6 @@ public class BandResource {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("addfavourite")
     public boolean addFavouriteBand(String favouriteJson) {
         StringTokenizer st = new StringTokenizer(favouriteJson, "\"");

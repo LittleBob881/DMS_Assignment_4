@@ -5,7 +5,10 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <uses-sdk android:minSdkVersion="14"/>
+
     <application
+        android:hardwareAccelerated="false"
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,6 +26,13 @@
             <intent-filter>
                 <category android:name="android.intent.category.HOME"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".NFCActivity"
+            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
         </activity>
     </application>
 

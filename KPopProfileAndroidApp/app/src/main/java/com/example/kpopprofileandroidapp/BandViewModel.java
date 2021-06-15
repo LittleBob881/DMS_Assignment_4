@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,20 +36,16 @@ import okhttp3.ResponseBody;
     the data from this class's methods.
  */
 public class BandViewModel extends ViewModel {      //my laptop ip address - 192.168.1.205
-    private static String KPopProfileServiceBandResourceURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/bands/";
+    private static String KPopProfileServiceBandResourceURL= "http://192.168.1.205:8080/KPopProfileService/kpopService/bands/";
     private static String GETFavouriteBandsURLFragment = "favourite/";
-    private static String POSTFavouriteBandUrlFragment = "addFavourite";
+    private static String POSTAddFavouriteBandUrlFragment = "addfavourite";
+    private static String POSTRemoveFavouriteBandUrlFragment = "removefavourite";
 
 
-    public List<Band> bandList;
+    public List<Band> bandList = new ArrayList<>();
+    public List<String> favouriteBands;
 
-    MutableLiveData<List<Band>> favouriteList;
-
-    // is triggered when activity or framgnent is linked to an instance of this viewmodel class.
-//    public BandViewModel()
-//    {
-//    }
-
+    // this methods is called when activity or fragmeent is linked to an instance of this viewmodel class.
     public void initialiseAllBands()
     {
         BandTask bandTask = new BandTask();
@@ -57,9 +54,6 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
             String response = bandTask.execute("GET").get();
             JSONObject jsonObject = new JSONObject(response);
             JSONArray bands = jsonObject.getJSONArray("bands");
-
-            //initialise allBandList
-            bandList = new ArrayList<>();
 
             for(int i = 0; i < bands.length(); i++)
             {
@@ -84,16 +78,67 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
     }
 
 
+    public void getFavouriteBands(String username)
+    {
+        favouriteBands = new ArrayList<>();
 
-//    public List getFavouriteBands(String username)
-//    {
-//
-//    }
+        BandTask bandTask = new BandTask();
+        String parameters[] = new String[2];
+        parameters[0] = "GET";
+        parameters[1] = username;
 
-//    public Band addFavouriteBand(String bandName, String username)
-//    {
-//
-//    }
+        try {
+            String response = bandTask.execute(parameters).get();
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray favBands = jsonObject.getJSONArray("bands");
+
+            for(int i = 0; i < favBands.length(); i++)
+            {
+                //retrieve object in JSON array
+                JSONObject bandObject = favBands.getJSONObject(i);
+
+                //add name of  favourite bands
+                String bandName = bandObject.getString("name");
+                favouriteBands.add(bandName);
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //true = add, false = remove
+    public boolean addOrRemoveFavouriteBand(String username, String bandName, boolean addBand)
+    {
+        String parameters[] = new String[4];
+        parameters[0] = "POST";
+
+        if(addBand)
+            parameters[1] = "add";
+        else
+            parameters[1] = "remove";
+
+        parameters[2] = username;
+        parameters[3] = bandName;
+
+        BandTask bandTask = new BandTask();
+        String response = "";
+        try {
+             response = bandTask.execute(parameters).get();
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Boolean.parseBoolean(response);
+    }
 
     public class BandTask extends AsyncTask<String, Void, String> {
 
@@ -104,6 +149,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .build();
+
 
         @Override
         protected String doInBackground(String... strings) {
@@ -118,43 +164,49 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
             //check if GET or POST
             if(strings[0].equalsIgnoreCase("GET"))
             {
-                //if GET has parameters (get list of favourite band)
+                //if GET has parameters (get list of user's favourite bands)
+                HttpUrl url;
                 if(strings.length == 2) {
-                    restRequest = new Request.Builder()
-                            .url(KPopProfileServiceBandResourceURL + GETFavouriteBandsURLFragment + strings[1])
-                            .get()
-                            .build();
-
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL + GETFavouriteBandsURLFragment + strings[1]);
                 }
                 else
                 {
-                    restRequest = new Request.Builder()
-                            .url(KPopProfileServiceBandResourceURL)
-                            .get()
-                            .build();
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL);
                 }
-
-            }
-            else if(strings[0].equalsIgnoreCase("POST"))
-            {
-                //put into JSON object
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("bandName", strings[1]);
-                    jsonObject.put("username", strings[2]);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                MediaType jsonType = MediaType.parse("application/json; charset=utf-8");
-
-                //add json as input to POST request
-                RequestBody body = RequestBody.create(jsonType, jsonObject.toString());
 
                 restRequest = new Request.Builder()
-                        .url(KPopProfileServiceBandResourceURL + POSTFavouriteBandUrlFragment)
+                        .url(url)
+                        .get()
+                        .build();
+            }
+            //if POST request, i.e. add a new favourite band for the username.
+            else if(strings[0].equalsIgnoreCase("POST"))
+            {
+                //add username and band name as a form parameters for  server to retrieve
+                RequestBody body = new FormBody.Builder()
+                        .addEncoded("userName", strings[2])
+                        .addEncoded("bandName", strings[3])
+                        .build();
+
+
+                //determine whether add or remove favourite band:
+                System.out.println("PARAMETER IS ----> "+strings[1]);
+                HttpUrl url;
+                if(strings[1].equalsIgnoreCase("add"))
+                {
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL+POSTAddFavouriteBandUrlFragment);
+                }
+                else
+                {
+                    url = HttpUrl.parse(KPopProfileServiceBandResourceURL+POSTRemoveFavouriteBandUrlFragment);
+                }
+
+
+                restRequest = new Request.Builder()
+                        .url(url)
                         .post(body)
                         .build();
+
             }
 
             System.out.println(strings[0]+" call to band resource made");
@@ -169,7 +221,7 @@ public class BandViewModel extends ViewModel {      //my laptop ip address - 192
 
                 }
                 else {
-                    System.err.println("Something went wrong with the POST request."+response.code());
+                    System.err.println("Something went wrong with the RESTFUL method request."+response.code());
                 }
 
             } catch (Exception e) {

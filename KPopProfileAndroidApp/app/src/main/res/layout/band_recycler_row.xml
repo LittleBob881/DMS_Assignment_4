@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        card_view:cardCornerRadius="50dp"
+        card_view:cardPreventCornerOverlap="true"
+        card_view:cardUseCompatPadding="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#BCA6A6">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/imageCardView"
+                android:layout_width="119dp"
+                android:layout_height="121dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="21dp"
+                android:layout_marginBottom="21dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                card_view:cardCornerRadius="40dp">
+
+                <ImageView
+                    android:id="@+id/bandImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    tools:srcCompat="@tools:sample/avatars" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/bandNameText"
+                android:layout_width="119dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="20dp"
+                android:text="bandName"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/imageCardView"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/yearText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="24dp"
+                android:text="year"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/bandNameText"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/generationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="57dp"
+                android:layout_marginRight="57dp"
+                android:text="generation 0"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/fandomText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.192"
+                app:layout_constraintStart_toEndOf="@+id/imageCardView"
+                app:layout_constraintTop_toBottomOf="@+id/bandNameText" />
+
+            <TextView
+                android:id="@+id/fandomText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="9dp"
+                android:text="fandom name"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imageCardView"
+                app:layout_constraintTop_toBottomOf="@+id/generationText" />
+
+
+            <ImageButton
+                android:id="@+id/favouriteButton"
+                style="@style/ToggleButtonWithIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="28dp"
+                android:layout_marginRight="28dp"
+                app:backgroundTint="#BCA6A6"
+                app:iconTint="#100C0C"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/generationText"
+                app:layout_constraintVertical_bias="0.384" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

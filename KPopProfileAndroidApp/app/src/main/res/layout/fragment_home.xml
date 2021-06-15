@@ -9,23 +9,63 @@
     <TextView
         android:id="@+id/welcomeText"
         android:layout_width="222dp"
-        android:layout_height="49dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/welcome_username"
         android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.064" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/addFriendNFCButton"
+        android:layout_width="281dp"
+        android:layout_height="89dp"
+        android:background="#000000"
+        android:shadowColor="#F6F6F6"
+        android:text="@string/send_Friend_Request_NFC"
+        android:textColor="#000000"
+        android:textColorHighlight="#F4F4F4"
+        android:textSize="20sp"
+        app:backgroundTint="#C59C9C"
+        app:iconTint="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/friendsTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeText"
+        app:layout_constraintVertical_bias="0.503"
+        app:rippleColor="#302D2D" />
+
+    <TextView
+        android:id="@+id/friendsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/Friends"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/friendsListTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/friendsListTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="364dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.046"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

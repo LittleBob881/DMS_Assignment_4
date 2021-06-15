@@ -1,46 +1,37 @@
 package com.example.kpopprofileandroidapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.sql.SQLOutput;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends Fragment {
 
-    //Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "username";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
+    TextView friendTextView;
+    Button goToNFCFriendActivity;
 
     public HomeFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-        }
     }
 
     @Override
@@ -54,6 +45,16 @@ public class HomeFragment extends Fragment {
 
         textView.setText("Welcome, " + activity.username+ "!");
 
+        goToNFCFriendActivity = view.findViewById(R.id.addFriendNFCButton);
+        goToNFCFriendActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { //set listener to start NFC activity if "Send Friend Request" button clicked
+                System.out.println("Navigating to main activity..");
+                Intent intent = new Intent(view.getContext(), NFCActivity.class);
+                intent.putExtra("username",  activity.username);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -61,7 +62,24 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO: call asynctask for network connection to get activity here:
+        //link viewmodel to this fragment
+        FriendViewModel viewModel = ViewModelProviders.of(this).get(FriendViewModel.class);
 
+        MainActivity activity = (MainActivity) getActivity();
+        friendTextView = view.findViewById(R.id.friendsListTextView);
+        //get user friends
+        viewModel.getFriends(activity.username);
+
+        if(viewModel.friends.isEmpty())
+        {
+            friendTextView.setText("No friends :(");
+        }
+        else
+        {
+            for(String name : viewModel.friends)
+            {
+                friendTextView.append("\n"+name);
+            }
+        }
     }
 }

@@ -26,7 +26,7 @@ public class LoginActivity extends Activity {
 
     EditText usernameInput;
     Button nextButton;
-    private static String KPopProfileServiceLoginURL= "http://10.0.2.2:8080/KPopProfileService/kpopService/userprofile/login";
+    private static String KPopProfileServiceLoginURL= "http://192.168.1.205:8080/KPopProfileService/kpopService/userprofile/login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,6 @@ public class LoginActivity extends Activity {
                 {
                     usernameInput.setError("Please enter a username");
                 }
-                //TODO: else... connect to RESTFul KPopProfileService
                 else
                 {
                     //connect to RESTful service using OkHttpClient wrapped in "LoginTask"
@@ -71,8 +70,6 @@ public class LoginActivity extends Activity {
                         .addEncoded("username", inputs[0])
                         .build();
 
-                System.out.println("request body built with username: "+inputs[0]);
-
                 Request postRequest = new Request.Builder()
                         .url(KPopProfileServiceLoginURL)
                         .post(body)
@@ -81,7 +78,7 @@ public class LoginActivity extends Activity {
                 //execute request to RESTful service
                 Call call = client.newCall(postRequest);
 
-                System.out.println("call to login made");
+                System.out.println("request to login made with username: "+inputs[0]);
 
                 try {
                     Response response = client.newCall(postRequest).execute();
