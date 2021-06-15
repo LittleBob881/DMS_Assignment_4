@@ -14,6 +14,7 @@ import android.os.Parcelable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -39,14 +40,15 @@ import java.util.List;
 public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback{
     private String username;
     private NfcAdapter nfcAdapter;
-    private TextView nfcStatusTextView, nfcResponseView,  senderTextView, outputTextView;
+    private TextView nfcStatusTextView, senderTextView, outputTextView;
     private PendingIntent pendingIntent;
     private BandViewModel viewModel;
+    private AlertDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nfc_activity);
-        username = this.getIntent().getStringExtra("username");
+        username = getIntent().getExtras().getString("username");
 
         //make viewmodel to do a GET request to fetch band favourites for this user
         viewModel = ViewModelProviders.of(this).get(BandViewModel.class);
@@ -97,13 +99,13 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
         }
         builder.setLength(builder.length()-1);
         System.out.println("RECORD TO SEND -----> "+builder);
-
+        System.out.println("USERNAME IS "+username);
         NdefMessage message = new NdefMessage(new NdefRecord[]
                 {NdefRecord.createApplicationRecord(username),
-                        NdefRecord.createApplicationRecord(builder.toString()),
+                        NdefRecord.createApplicationRecord(builder.toString())
                 });
 
-        System.out.println("NDEF MESSAGE CREATED");
+        outputTextView.append("\nFriend request sent");
         return message;
     }
 
@@ -153,57 +155,73 @@ public class NFCActivity extends AppCompatActivity implements NfcAdapter.CreateN
     public void showFriendRequestPopup(String sender, List<String> senderBands)
     {
         //create view model to add friends
-        FriendViewModel friendModel = new FriendViewModel();
+        FriendViewModel friendModel = ViewModelProviders.of(this).get(FriendViewModel.class);
+        friendModel.getFriends(username);
 
-        //show friend request popup
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        View friendPopup = getLayoutInflater().inflate(R.layout.friend_popup, null);
-        dialogBuilder.setView(friendPopup);
-
-        //add to output text
-        outputTextView.append("\nFriend Request received from "+sender);
-
-        //get favourite bands for user incase it wasnt called initially, used to compare with sender's bands
-        viewModel.getFavouriteBands(username);
-
-        String friendRequestMessage = "New Friend request from: ";
-        Spannable senderUsername = new SpannableString(sender+"\n");
-        senderUsername.setSpan(new ForegroundColorSpan(Color.BLUE), 0, senderUsername.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        StringBuilder bandsInCommon = new StringBuilder();
-        StringBuilder otherBands = new StringBuilder();
-        otherBands.append("\n\n"+sender+"'s Other Favourite Bands:\n")
-        for(String bandName : senderBands)
+        if(friendModel.friends.contains(sender))
         {
-            if(viewModel.favouriteBands.contains(bandName))
-            {
-                bandsInCommon.append("\nYou both like "+bandName+"!");
-            }
-            else
-                otherBands.append("\n"+bandName);
+            outputTextView.append("\nYou are already friends with " + sender);
         }
 
-        //add listener for "Accept friend request" button
-        Button acceptButton = findViewById(R.id.addFriendNFCButton);
-        acceptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
+        //show friend request popup
+        else {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            View friendPopup = getLayoutInflater().inflate(R.layout.friend_popup, null);
+
+            senderTextView = friendPopup.findViewById(R.id.friendRequestTextView);
+            Button acceptButton = (Button)friendPopup.findViewById(R.id.acceptButton);
+
+            //add to output text
+            outputTextView.append("\nFriend Request received from " + sender);
+
+            //get favourite bands for user incase it wasnt called initially, used to compare with sender's bands
+            viewModel.getFavouriteBands(username);
+
+            String friendRequestMessage = "New Friend request from: ";
+            Spannable senderUsername = new SpannableString(sender + "\n");
+            senderUsername.setSpan(new ForegroundColorSpan(Color.BLUE), 0, senderUsername.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            StringBuilder bandsInCommon = new StringBuilder();
+            StringBuilder otherBands = new StringBuilder();
+            otherBands.append("\n\n" + sender + "'s Other Favourite Bands:\n");
+            for (String bandName : senderBands) {
+                if (viewModel.favouriteBands.contains(bandName)) {
+                    bandsInCommon.append("\nYou both like " + bandName + "!");
+                } else
+                    otherBands.append("\n" + bandName);
             }
-        });
-
-        Spannable commonBands = new SpannableString(bandsInCommon.toString());
-        commonBands.setSpan(new ForegroundColorSpan(Color.GREEN), 0, commonBands.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
-        senderTextView =  friendPopup.findViewById(R.id.friendRequestTextView);
-        senderTextView.setText(friendRequestMessage);
-        senderTextView.append(senderUsername);
-        senderTextView.append(commonBands);
-        senderTextView.append(otherBands);
+            Spannable commonBands = new SpannableString(bandsInCommon.toString());
+            commonBands.setSpan(new ForegroundColorSpan(Color.GREEN), 0, commonBands.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        AlertDialog dialog = dialogBuilder.create();
-        dialog.show();
+            dialogBuilder.setView(friendPopup);
+            dialog = dialogBuilder.create();
+            dialog.show();
+
+            senderTextView.setText(friendRequestMessage);
+            senderTextView.append(senderUsername);
+            senderTextView.append(commonBands);
+            senderTextView.append(otherBands);
+
+            //add listener for "Accept friend request" button
+            acceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean success = friendModel.addFriends(username, sender);
+                    if(success)
+                    {
+                        outputTextView.append("\nAccepted Friend request from "+sender);
+                    }
+                    else
+                    {
+                        outputTextView.append("\nSomething went wrong with request from "+sender);
+                    }
+                    dialog.dismiss();
+                }
+            });
+        }
     }
 
     //get friend request message from sender (via android beam)
