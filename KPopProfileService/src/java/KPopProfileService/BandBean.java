@@ -35,15 +35,17 @@ import javax.transaction.UserTransaction;
 public class BandBean {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
-   // MessageSender messageSender = new MessageSender();
+    MessageSender messageSender = new MessageSender();
 
-    //for commits to database
+    //for commits to database    
     @Resource
     private UserTransaction userTransaction;
+
     @PersistenceContext(unitName = "KPopProfileServicePU")
     private EntityManager entityManager;
+    
     private List<Band> bandList;
-
+    
     @PostConstruct
     public void initialiseUsernameList() {
         if (entityManager != null) {
@@ -53,7 +55,7 @@ public class BandBean {
         }
     }
 
-        public List<Band> getFavouriteBands(String userName) {
+    public List<Band> getFavouriteBands(String userName) {
         List<FavouriteBand> favouriteBands;
         List<Band> favouriteBandDetails = new ArrayList<>();
 
@@ -81,58 +83,46 @@ public class BandBean {
         return favouriteBandDetails;
     }
 
-    public List getAllBands()
-    {
-        return bandList;
+    public String getAllBandsJSON() {
+        JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("numVariables", 1)
+                .add("method", "getAllBands")
+                .build();
+
+        System.out.println("Sending  messages");
+        String response = messageSender.sendMessage(faveBandJSON.toString());
+        System.out.println("Sending completed");
+
+        return response;
+    }
+
+    public boolean addFavouriteBand(String bandName, String userName) {
+        JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("numVariables", 3)
+                .add("method", "addFaveBand")
+                .add("userName", userName)
+                .add("bandName", bandName)
+                .build();
+
+        System.out.println("Sending  messages");
+        String response = messageSender.sendMessage(faveBandJSON.toString());
+        System.out.println("Sending completed");
+
+        return Boolean.parseBoolean(response);
     }
     
-    public boolean addFavouriteBand(String bandName, String username) {
-        FavouriteBand favBand = new FavouriteBand();
-        favBand.setBandName(bandName);
-        favBand.setUsername(username);
+       public boolean removeFavouriteBand(String bandName, String userName) {
+        JsonObject faveBandJSON = Json.createObjectBuilder()
+                .add("numVariables", 3)
+                .add("method", "removeFaveBand")
+                .add("userName", userName)
+                .add("bandName", bandName)
+                .build();
 
-        if(entityManager != null)
-        {
-            try {
-                userTransaction.begin();
-                entityManager.persist(favBand);
-                entityManager.flush();
-                userTransaction.commit();
-            } catch (RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException | SystemException | NotSupportedException ex) {
-                Logger.getLogger(BandBean.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            }
-        }
-        
-        System.out.println("POST REQUEST TO ADD FAVOURITE BAND DONE!");
-        return true;
-//        System.out.println("Sending  messages");
-//        
-//       // messageSender.send(faveBandJSON.toString());
-//        System.out.println("Sending completed");
-    }
-    
-    public boolean removeFavouriteBand(String bandName, String username)
-    {
-        if(entityManager != null)
-        {
-            try { //remove favouriteband
-                userTransaction.begin();
-                Query query = entityManager.createQuery("DELETE from FavouriteBand f WHERE "
-                        + "f.username = :username AND f.bandName = :bandName", FavouriteBand.class);
-                query.setParameter("username", username);
-                query.setParameter("bandName", bandName).executeUpdate();
-                    
-                entityManager.flush();
-                userTransaction.commit();
+        System.out.println("Sending messages");
+        String response = messageSender.sendMessage(faveBandJSON.toString());
+        System.out.println("Sending completed");
 
-            } catch (RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException | SystemException | NotSupportedException ex) {
-                Logger.getLogger(BandBean.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            }
-        }
-        System.out.println("POST REQUEST TO REMOVE FAVOURITE BAND DONE!");
-        
-        return true;
+        return Boolean.parseBoolean(response);
     }
 }

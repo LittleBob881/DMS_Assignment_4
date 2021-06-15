@@ -3,7 +3,7 @@
  * KPop Profile RESTFul Service
  * Elizabeth Cammell (18030282) & Bernadette Cruz (17985971)
  */
-package KPopProfileService;
+package KPopProfileEntities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,43 +14,32 @@ import javax.persistence.Table;
 
 /**
  *
- * This is the Entity Object to use Persistence, which references the table of
- * user profiles and their list of favourite kpop bands.
+ * User Profile Entity, columns for ID and user name.
  */
 @Entity
-@Table(name = "jbr9093_kpop_band_faves")
-public class FavouriteBand {
+@Table(name = "jbr9093_kpop_useres")
+public class UserProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
-    @Column(name = "band_name")
-    private String bandName;
     @Column
     private String username;
 
-    public FavouriteBand() {
+    public UserProfile() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getBandName() {
-        return bandName;
-    }
-
     public String getUsername() {
         return username;
     }
 
-    public void setId(Long id) {
+    public void setId(Long Id) {
         this.id = id;
-    }
-
-    public void setBandName(String bandName) {
-        this.bandName = bandName;
     }
 
     public void setUsername(String username) {

@@ -3,7 +3,7 @@
  * KPop Profile RESTFul Service
  * Elizabeth Cammell (18030282) & Bernadette Cruz (17985971)
  */
-package KPopProfileService;
+package KPopProfileEntities;
 
 import java.io.Serializable;
 import javax.persistence.Column;
