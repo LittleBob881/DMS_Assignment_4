@@ -12,5 +12,6 @@
     <string name="send_Friend_Request_NFC">Send Friend Request via NFC </string>
     <string name="accept">Accept</string>
     <string name="Output">Output:</string>
+    <string name="Friends">Friends</string>
 
 </resources>

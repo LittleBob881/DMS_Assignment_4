@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,9 +23,7 @@ import java.sql.SQLOutput;
 
 public class HomeFragment extends Fragment {
 
-    //Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "username";
+    TextView friendTextView;
     Button goToNFCFriendActivity;
 
     public HomeFragment() {
@@ -62,7 +62,24 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO: call asynctask for network connection to get activity here:
+        //link viewmodel to this fragment
+        FriendViewModel viewModel = ViewModelProviders.of(this).get(FriendViewModel.class);
 
+        MainActivity activity = (MainActivity) getActivity();
+        friendTextView = view.findViewById(R.id.friendsListTextView);
+        //get user friends
+        viewModel.getFriends(activity.username);
+
+        if(viewModel.friends.isEmpty())
+        {
+            friendTextView.setText("No friends :(");
+        }
+        else
+        {
+            for(String name : viewModel.friends)
+            {
+                friendTextView.append("\n"+name);
+            }
+        }
     }
 }

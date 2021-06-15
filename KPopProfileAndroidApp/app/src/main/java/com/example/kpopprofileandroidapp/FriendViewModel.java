@@ -64,18 +64,19 @@ public class FriendViewModel extends ViewModel {
         try {
             String response = friendTask.execute(parameters).get();
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray friends = jsonObject.getJSONArray("friends");
+            JSONArray friendJsonArray = jsonObject.getJSONArray("friends");
 
-            for(int i = 0; i < friends.length(); i++)
+            for(int i = 0; i < friendJsonArray.length(); i++)
             {
                 //retrieve object in JSON array
-                JSONObject friendObject = friends.getJSONObject(i);
+                JSONObject friendObject = friendJsonArray.getJSONObject(i);
 
                 //add name of  favourite bands
                 String friendName = friendObject.getString("username");
-                friends.put(friendName);
+                friends.add(friendName);
             }
-            System.out.println("FRIENDS SIZE -> "+friends.length());
+
+            System.out.println("FRIENDS SIZE -> "+friends.size());
        } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
